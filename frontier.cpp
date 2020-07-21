@@ -144,7 +144,7 @@ int main()
 
         //text_shader.setMat4("projection", projection);
         //text_shader.setMat4("view", glm::mat4(1.0f));
-        //render_text(text_shader, "fronteir", -scr_wid/2+10, scr_hei/2-text_hei,0.5f, text_color);
+        //render_text(text_shader, "frontier", -scr_wid/2+10, scr_hei/2-text_hei,0.5f, text_color);
 
         current_time = glfwGetTime();
 

@@ -77,3 +77,25 @@ glm::ivec2 Tile::get_world_pos()
 {
     return _world_pos;
 }
+
+
+TileData* Tile::get_tile_data()
+{
+    TileData* tile_data = new TileData {
+        _type,
+        _feature_type,
+        _world_pos,
+        0,
+        NULL,
+        _elevation
+    };
+    return tile_data;
+}
+
+
+
+
+
+
+
+

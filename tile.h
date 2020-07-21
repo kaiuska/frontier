@@ -30,11 +30,14 @@ public:
     void set_world_pos(int x, int y);
     glm::ivec2 get_world_pos();
 
+    TileData* get_tile_data(); 
+
 private:
     glm::ivec2 _world_pos;
     TileType _type;
     FeatureType _feature_type;
     int _elevation;
+
 };
 
 

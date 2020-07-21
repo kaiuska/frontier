@@ -1,11 +1,14 @@
 #ifndef _MAP_H_
 #define _MAP_H_
-#include <vector>
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <vector>
+#include <string>
+#include <fstream>
 
 #include "shader.h"
 #include "utils.h"
@@ -30,8 +33,11 @@ public:
 
 private:
     void generate_tile(int x, int y, int worldx, int worldy);
+    bool save_changes();
 
 private:
+    std::string _name;
+
     Tile*** _tiles;
     glm::ivec2 _center;
     glm::ivec2 _world_pos;

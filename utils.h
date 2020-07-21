@@ -28,8 +28,8 @@
 #define DEFAULT_HEI 800
 #define DEFAULT_WID 600
 
-#define TILESX 40
-#define TILESY 40
+#define TILESX 80
+#define TILESY 80
 
 
 extern short rands[];
@@ -55,15 +55,9 @@ extern const float ELEVATION_OFFSET;
 extern const int MAX_ELEVATION; 
 extern const int MIN_ELEVATION;
 
-
 extern float game_time;
 
 
-
-
-struct TileDef {
-    bool passable;
-};
 
 
 /* Enums with a cooresponding texture are given unique number codes */
@@ -123,6 +117,18 @@ enum FeatureType{
 };
 extern FeatureType feature_list[];
 
+enum ItemType{
+    NO_ITEM = 400
+};
+
+struct TileData {
+    TileType _type;
+    FeatureType _feature;
+    glm::ivec2 _world_pos;
+    int _num_items;
+    ItemType* _items;
+    int _elevation;
+};
 
 // controls: 500-599
 enum ControlType {

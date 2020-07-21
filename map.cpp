@@ -199,31 +199,32 @@ void Map::generate_tile(int x, int y, int worldx, int worldy)
 
 
     TileType tile = GREEN_GRASS;
+    FeatureType feature = NO_FEATURE;
 
     if(elevation <= -4){
         tile = WATER;
-        elevation++;
+        elevation = -4;
+    }
+    else{
+        if(noise(v * (1.0f/100)) * 20.0f > 0.5)
+            tile = DEAD_GRASS;
+        
+
+        //srand(5);
+        int roll = rand()%100;
+        if(0 <= roll && roll < 10)
+            feature = TREE;
+        if(10 < roll && roll < 15)
+            feature = OLD_TREE;
+        if(15 < roll && roll < 20)
+            feature = LONG_GRASS;
+        if(20 < roll && roll < 26)
+            feature = LONG_GRASS;
+        if(26 < roll && roll < 30)
+            feature = FERN;
     }
 
-    if(noise(v * (1.0f/100)) * 20.0f > 0.5)
-        tile = DEAD_GRASS;
-    
-
-    FeatureType feature = NO_FEATURE;
-    //srand(5);
-    int roll = rand()%100;
-    if(0 <= roll && roll < 10)
-        feature = TREE;
-    if(10 < roll && roll < 15)
-        feature = OLD_TREE;
-    if(15 < roll && roll < 20)
-        feature = LONG_GRASS;
-    if(20 < roll && roll < 26)
-        feature = LONG_GRASS;
-    if(26 < roll && roll < 30)
-        feature = FERN;
-
-    feature = NO_FEATURE;
+    //feature = NO_FEATURE;
     glm::vec2 pos = place_tile( glm::vec2( (float)-worldy, (float)-worldx), TILE_WID, TILE_SURFACE_HEI);
 
 
@@ -275,4 +276,9 @@ glm::ivec2 Map::neighboring_tile(glm::ivec2 start, Direction dir)
     }
 }
 
+bool save_changes()
+{
+//    std::fstream fout;
+//    fout.open(_name, ios::out);
 
+}
