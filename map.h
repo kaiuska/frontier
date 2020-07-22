@@ -31,6 +31,8 @@ public:
     void zoom(float inc);
     glm::ivec2 neighboring_tile(glm::ivec2 start, Direction dir);
 
+    void player_action();
+
 private:
     void generate_tile(int x, int y, int worldx, int worldy);
     bool save_changes();

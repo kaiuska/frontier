@@ -6,6 +6,7 @@ Map::Map(int tilesx, int tilesy)
     : _dimensions(tilesx, tilesy), 
       _center(tilesx/2, tilesy/2),
       _world_pos(tilesx/2, tilesy/2),
+      //_world_pos(0,0),
       _zoom(1.0f),
       _tiles_to_render(40)
 {
@@ -178,7 +179,8 @@ void Map::init()
 
 void Map::generate_tile(int x, int y, int worldx, int worldy)
 {
-    glm::vec2 v((float)(500+worldx)*0.15f, (float)(worldy)*0.15f);
+    //glm::vec2 v((float)(500+worldx)*0.15f, (float)(worldy)*0.15f);
+    glm::vec2 v((float)(500+worldx)*0.1f, (float)(worldy)*0.1f);
 
     float r =  
         noise(v * (1.0f/50)) * 3.0f + 
@@ -276,9 +278,11 @@ glm::ivec2 Map::neighboring_tile(glm::ivec2 start, Direction dir)
     }
 }
 
+
 bool save_changes()
 {
 //    std::fstream fout;
 //    fout.open(_name, ios::out);
+
 
 }

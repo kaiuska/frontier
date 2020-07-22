@@ -31,6 +31,8 @@
 #define TILESX 80
 #define TILESY 80
 
+// turn length of 5 seconds
+extern const float TURN_LENGTH;
 
 extern short rands[];
 
@@ -120,7 +122,6 @@ extern FeatureType feature_list[];
 enum ItemType{
     NO_ITEM = 400
 };
-
 struct TileData {
     TileType _type;
     FeatureType _feature;
@@ -129,6 +130,13 @@ struct TileData {
     ItemType* _items;
     int _elevation;
 };
+
+/*
+struct TileChange {
+    glm::ivec2 _world_pos;
+};
+*/
+
 
 // controls: 500-599
 enum ControlType {

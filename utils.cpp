@@ -6,6 +6,7 @@
 //#include "rands.h"
 
 
+const float TURN_LENGTH = 0.05;
 
 float scr_wid = (float)DEFAULT_WID;
 float scr_hei = (float)DEFAULT_HEI;

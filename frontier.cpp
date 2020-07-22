@@ -171,7 +171,8 @@ bool process_input(GLFWwindow *window, Map& map ,float dt)
 
     float new_time = glfwGetTime();
 
-    if((new_time - key_time) > 0.00f){
+    //if((new_time - key_time) > 0.00f){
+    if((new_time - key_time) > TURN_LENGTH){
 
         if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
             map.turn_player(LEFT);

@@ -38,16 +38,9 @@ void MainMenu::draw(Shader& shader, Shader& text_shader)
     float t_wid = 1.0f;
     shader.setInt("subtex", _subtex);
     shader.setFloat("tex_wid", t_wid);
-    /*
-    printf("main menu pos:  %f, %f\n", _pos.x, _pos.y);
-    printf("          size: %f, %f\n", _size.x, _size.y);
-    printf("          vaoID:  %d\n", _vaoID);
-    printf("          texID:  %d\n", _textureID);
-    */
 
     glBindVertexArray(_vaoID);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); 
-
 
     _button.draw(shader, text_shader);
 }
