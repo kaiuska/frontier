@@ -21,8 +21,6 @@ float TILE_HEI = 286.0f;
 
 const float TILE_SURFACE_HEI = TILE_WID/2;
 
-float zoom = 1.0f;
-//int tiles_to_render = 40;
 const float ZOOM_INC = 0.5f;
 const float MAX_ZOOM = 16.0f;
 const float MIN_ZOOM = 0.5f;
@@ -34,15 +32,10 @@ const float feature_hei = 240.0f;
 
 
 const float ELEVATION_OFFSET = 0.1f;
-const int MAX_ELEVATION = 40;
+const int MAX_ELEVATION = 32;
 const int MIN_ELEVATION = -24;
 
-float game_time = 0.0f;
 
-
-float menu_wid = 240;
-glm::vec3 menu_bg_color(0.3, 0.1, 0.1);
-glm::vec3 button_bg_color(0.35, 0.1, 0.1);
 
 const glm::vec3 text_color(0.0f, 0.0f, 0.0f);
 const float text_hei = 40;
@@ -50,9 +43,6 @@ const float text_hei = 40;
 
 unsigned int text_vao;
 unsigned int text_vbo;
-
-unsigned int sprite_vao;
-unsigned int sprite_vbo;
 
 
 //std::map<int, TileDef> tile_definitions = {
@@ -62,51 +52,6 @@ unsigned int sprite_vbo;
 //    { FERN,         {true} },
 //    { LONG_GRASS,   {false} }
 //};
-
-PersonType person_list[] = {
-    PLAYER
-};
-
-
-
-FeatureType feature_list[] = {
-    // wild
-    TREE,
-    OLD_TREE,
-    BUSH,
-    FERN,
-    LONG_GRASS,
-
-    // agriculture
-    TILLED_SOIL,
-    CORN_STAGE_1,
-    CORN_STAGE_2,
-    CORN_STAGE_3,
-    CORN_STAGE_4,
-    CORN_STAGE_5,
-    NO_FEATURE
-};
-
-
-
-ControlType control_list[] = {
-    MAIN_MENU,
-    BUTTON,
-    NO_CONTROL
-};
-
-
-
-TileType tile_list[] = {
-    GREEN_GRASS,
-    DEAD_GRASS,
-    WATER,
-    NO_TILE
-};
-
-
-
-
 
 
 void render_text(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color)
@@ -131,7 +76,7 @@ void render_text(Shader &s, std::string text, float x, float y, float scale, glm
         float w = ch.size.x * scale;
         float h = ch.size.y * scale;
         // update VBO for each character
-        float vertices[6][4] = {
+        float verts[6][4] = {
             { xpos,     ypos + h,   0.0f, 0.0f },            
             { xpos,     ypos,       0.0f, 1.0f },
             { xpos + w, ypos,       1.0f, 1.0f },
@@ -144,7 +89,7 @@ void render_text(Shader &s, std::string text, float x, float y, float scale, glm
         glBindTexture(GL_TEXTURE_2D, ch.textureID);
         // update content of VBO memory
         glBindBuffer(GL_ARRAY_BUFFER, text_vbo);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), verts); 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         // render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -154,7 +99,6 @@ void render_text(Shader &s, std::string text, float x, float y, float scale, glm
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
-
 
 
 
@@ -177,83 +121,7 @@ glm::vec3 iso_to_cartesian(glm::vec3 iso)
             iso.z);
 }
 
-// overwrites map::characters with characters from font
-void load_font(const char* font, int hei)
-{
-    FT_Library ft;
-    if(FT_Init_FreeType(&ft)){
-        fprintf(stderr, "ERROR::FREETYPE: Failed to init FreeType Library\n");
-        return;
-    }
-    FT_Face face;
-    if(FT_New_Face(ft, font, 0, &face)){
-        fprintf(stderr, "ERROR::FREETYPE: Failed to load font %s\n", font);
-        return;
-    }
-    FT_Set_Pixel_Sizes(face, 0, hei);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    for(unsigned char ch = 0; ch < 128; ch++){
-        if(FT_Load_Char(face, ch, FT_LOAD_RENDER)){
-            fprintf(stderr, "ERROR::FREETYPE: Failed to load glyph \"%c\"\n", ch);
-            continue;
-        }
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width,
-                    face->glyph->bitmap.rows, 0, GL_RED,GL_UNSIGNED_BYTE,
-                    face->glyph->bitmap.buffer);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        Character character = {
-                texture, 
-                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                face->glyph->advance.x
-            };
-
-        characters.insert(std::pair<char, Character>(ch, character));
-    }
-    glBindTexture(GL_TEXTURE_2D, 0);
-    FT_Done_Face(face);
-    FT_Done_FreeType(ft);
-}
-
-
-unsigned int load_texture(const char *fname, int alpha)                                 
-{                                                                                       
-    stbi_set_flip_vertically_on_load(true);
-    unsigned int texture;                                                               
-    glGenTextures(1, &texture);                                                         
-    glBindTexture(GL_TEXTURE_2D, texture);                                              
-    // load and generate the texture                                                    
-    int width, height, nrChannels;                                                      
-    unsigned char *data = stbi_load(fname, &width, &height, &nrChannels, 0);            
-    if (data)                                                                           
-    {                                                                                   
-        if(alpha == 0)                                                                  
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        else                                                                            
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);                                                
-                                                                                        
-        // set the texture wrapping/filtering options (on the currently bound texture ob
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);                   
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);                   
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);               
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);               
-    }                                                                                   
-    else                                                                                
-    {                                                                                   
-        std::cerr << "Failed to load texture " << fname << std::endl;                   
-        exit(EXIT_FAILURE);                                                             
-    }                                                                                   
-    stbi_image_free(data);                                                              
-    return texture;                                                                     
-}
 
 glm::vec2 grad(glm::vec2 p){
     glm::vec2 r(((float)rands[int(p.x)%512]/512)*2.0f-1.0f, ((float)rands[int(p.y)%512]/512.0f)*2.0f-1.0f);
@@ -288,6 +156,23 @@ float noise(glm::vec2 p){
     return (1.0 - fade_t1) * p0p1 + fade_t1 * p2p3;
 }
 
+float vertices[] = {
+    1.0f,  0.0f,   // top right
+    1.0f, -1.0f,   // bottom rig
+    0.0f, -1.0f,   // bottom lef
+    0.0f,  0.0f,    // top left 
+};
+
+float texcoords[] = {
+    1.0f, 1.0f,   // top right
+    1.0f, 0.0f,   // bottom rig
+    0.0f, 0.0f,   // bottom lef
+    0.0f, 1.0f,    // top left 
+};
+unsigned int indices[] = {
+    0, 1, 3, 
+    3, 2, 1,
+};
 
 short rands[] = {
 142,7,29,18,9,101,78,4,31,45,

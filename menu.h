@@ -10,6 +10,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <string>
 
+extern float menu_wid;
+extern glm::vec3 menu_bg_color;
+
 class MainMenu : public Sprite
 {
 public:

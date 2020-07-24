@@ -22,6 +22,21 @@ Map::Map(int tilesx, int tilesy)
     //printf("player tile: %d %d\n", _player.get_tile().x, _player.get_tile().y);
     //printf("center %d %d\n", _center.x, _center.y);
 }
+void Map::create(int tilesx, int tilesy)
+{
+    _dimensions = glm::ivec2(tilesx, tilesy);
+    _center = glm::ivec2(tilesx/2, tilesy/2);
+    _world_pos = glm::ivec2(tilesx/2, tilesy/2);
+    _zoom = 1.0f;
+    _tiles_to_render = 40;
+
+    init();
+    _camera_pos = glm::vec3(_tiles[(int)_center.x][(int)_center.y]->get_position(), 1.0f);
+    _camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
+    _camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    _player.init(_center, _camera_pos, PLAYER);
+}
 
 void Map::draw(Shader& shader)
 {
@@ -59,7 +74,7 @@ void Map::draw(Shader& shader)
 }
 
 
-void Map::turn_player(Turn dir)
+void Map::turn_player(TurnDirection dir)
 {
    _player.turn(dir); 
 }

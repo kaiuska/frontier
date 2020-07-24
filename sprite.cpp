@@ -1,6 +1,9 @@
 #include "sprite.h"
 
 
+unsigned int sprite_vao;
+unsigned int sprite_vbo;
+
 Sprite::Sprite(){
     _vaoID = sprite_vao;
 }

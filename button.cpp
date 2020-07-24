@@ -1,5 +1,7 @@
 #include "button.h"
 
+glm::vec3 button_bg_color(0.35, 0.1, 0.1);
+
 Button::Button(){}
 
 

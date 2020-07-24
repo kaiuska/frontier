@@ -1,5 +1,8 @@
 #include "menu.h"
 
+float menu_wid = 240;
+glm::vec3 menu_bg_color(0.3, 0.1, 0.1);
+
 MainMenu::MainMenu(){}
 
 MainMenu::MainMenu(glm::vec2 pos, glm::vec2 size)

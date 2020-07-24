@@ -21,11 +21,13 @@ class Map
 {
 public:
     Map(int tilesx, int tilesy);
+    Map(){};
+    void create(int tilesx, int tilesy);
     void init();
 
     void draw(Shader& shader);
 
-    void turn_player(Turn dir);
+    void turn_player(TurnDirection dir);
     void move_player(MoveDirection direction);
 
     void zoom(float inc);

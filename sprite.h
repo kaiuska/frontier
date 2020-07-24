@@ -10,6 +10,8 @@
 
 #define SCALE_TO_TEX -1
 
+extern unsigned int sprite_vao;
+extern unsigned int sprite_vbo;
 
 class Sprite
 {

@@ -11,6 +11,8 @@
 #include "shader.h"
 #include "sprite.h"
 
+extern glm::vec3 button_bg_color;
+
 class Button : public Sprite
 {
 public:

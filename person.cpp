@@ -60,7 +60,7 @@ void Person::move(glm::ivec2 tile, glm::vec2 pos)
     _direction_indicator.set_position(ind_pos);
 }
 
-void Person::turn(Turn dir)
+void Person::turn(TurnDirection dir)
 {
     if(dir == RIGHT)
         _facing = (Direction)(_facing + 1);

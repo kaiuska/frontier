@@ -20,7 +20,7 @@ public:
     void init(glm::ivec2 tile, glm::vec2 pos, PersonType type);
     void draw(Shader shader);
     void move(glm::ivec2 tile, glm::vec2 pos);
-    void turn(Turn dir);
+    void turn(TurnDirection dir);
     glm::ivec2 get_tile();
     Direction facing();
 
