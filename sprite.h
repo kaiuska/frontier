@@ -19,6 +19,7 @@ public:
     Sprite();
     Sprite(glm::vec2 pos, glm::vec2 size, unsigned int texID);
     void create(glm::vec2 pos, glm::vec2 size, unsigned int texID);
+    void create(glm::vec2 pos, glm::vec2 size, unsigned int texID, int subtex);
     virtual void draw(Shader shader);
 
     void set_size(float x, float y);
@@ -42,12 +43,14 @@ public:
     //virtual void click();
     //void set_elevation(int elevation);
     void set_subtex(int subtex);
+    void set_highlight(glm::vec4 highlight);
 
 protected:
     glm::vec2 _pos;
     glm::vec2 _size;
     unsigned int _textureID;
     unsigned int _vaoID;
+    glm::vec4 _highlight;
     //int _elevation;
     glm::vec2 _tex_dimensions;
     int _subtex;

@@ -1,25 +1,50 @@
 #include "button.h"
 
-glm::vec3 button_bg_color(0.35, 0.1, 0.1);
 
 Button::Button(){}
 
 
-Button::Button(std::string text, float text_scale, glm::vec2 pos, glm::vec2 size)
+Button::Button(std::string text, float text_scale, glm::vec2 pos, glm::vec2 size, int action)
 {
-    init(text, text_scale, pos, size);
+    init(text, text_scale, pos, size, action);
 }
 
-void Button::init(std::string text, float text_scale, glm::vec2 pos, glm::vec2 size)
+Button::Button(std::string text, float text_scale, glm::vec2 pos, glm::vec2 size, int action, unsigned int texID, int subtex)
 {
+    init(text, text_scale, pos, size, action);
+    set_image(texID, subtex);
+}
+
+void Button::init(std::string text, float text_scale, glm::vec2 pos, glm::vec2 size, int action = NONE)
+{
+    _has_image = false;
+    set_size(size);
     set_text(text);
     Sprite::create(pos, size, textures[BUTTON]);
     _text_scale = text_scale;
+    _action = action;
+    _subtex = 0;
 
-    _text_pos.y = pos.y - size.y/2 - text_hei/2 + 5;//(text_hei*text_scale)/2;
-    _text_pos.x = pos.x + 20.0f;
-
+    set_position(pos);
 }
+
+
+void Button::set_image(unsigned int texID, int subtex)
+{
+
+    //_image.create(glm::vec2(_pos.x + _size.x - TILE_WID, _pos.y), glm::vec2(SCALE_TO_TEX, SCALE_TO_TEX), texID);
+    _image.create(_pos, glm::vec2(SCALE_TO_TEX, SCALE_TO_TEX), texID);
+    _image.set_subtex(subtex);
+
+
+    glm::vec2 tex_size = _image.get_tex_dimensions();
+
+    float scale = _size.y / tex_size.y;
+
+    _image.set_size(TILE_WID * scale, tex_size.y * scale );
+    _has_image = true;
+}
+
 
 void Button::draw(Shader& shader, Shader& text_shader)
 {
@@ -47,6 +72,8 @@ void Button::draw(Shader& shader, Shader& text_shader)
     glBindVertexArray(_vaoID);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); 
 
+    if(_has_image)
+        _image.draw(shader);
 
     render_text(text_shader, _text, _text_pos.x ,_text_pos.y, _text_scale, text_color);
 }
@@ -58,7 +85,7 @@ void Button::set_text(const std::string& text)
 
 glm::vec4 Button::get_rect()
 {
-    return glm::vec4(_pos, _pos.x + _size.x, _pos.y+_pos.y);
+    return glm::vec4(_pos, _pos.x + _size.x, _pos.y-_pos.y);
 }
 
 
@@ -75,25 +102,24 @@ bool Button::is_clicked(glm::vec2 mouse)
 
 void Button::click()
 {
-    printf("button clicked\n");
-    printf("button: pos:  %f %f \n", _pos.x, _pos.y); 
-    printf("        size: %f %f \n", _size.x, _size.y); 
-    printf("        texID: %d  \n", _textureID); 
-    printf("        vaoID: %d  \n", _vaoID); 
+    printf("button \"%s\" clicked\n", _text.c_str());
 }
 
 
 
 void Button::set_position(glm::vec2 pos)
 {
-    printf("moving button\n");
     _pos = pos; 
     //_text_pos
 
+    
     _text_pos.x = pos.x + 20.0f;
-    _text_pos.y = pos.y - _size.y/2 - text_hei/2 + 5;
-
+    _text_pos.y = pos.y - _size.y + 5.0f;
 }
 
 
+int Button::get_action()
+{
+    return _action;
+}
 

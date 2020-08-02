@@ -15,7 +15,7 @@
 #include <cstdio>
 #include <map>
 
-#include "asset_management.h"
+#include "resources.h"
 #include "shader.h"
 #include "types.h"
 
@@ -31,11 +31,12 @@ extern const float TURN_LENGTH;
 
 extern short rands[];
 
+extern bool mouse_clicked;
+extern glm::vec2 click_pos;
 
 
 extern float scr_wid;
 extern float scr_hei; 
-extern float menu_wid;
 extern float zoom;
 extern const float ZOOM_INC;
 extern const float MAX_ZOOM;
@@ -100,6 +101,8 @@ glm::vec3 iso_to_cartesian(glm::vec3 iso);
 glm::vec2 place_tile(glm::vec2 cart, float wid, float hei);
 void render_text(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color);
 void init_textures();
+
+Direction reverse_direction(Direction dir);
 
 glm::vec2 grad(glm::vec2 p);
 float fade(float t);

@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <map>
 #include <vector>
 #include <string>
 #include <fstream>
@@ -31,9 +32,12 @@ public:
     void move_player(MoveDirection direction);
 
     void zoom(float inc);
-    glm::ivec2 neighboring_tile(glm::ivec2 start, Direction dir);
+    //glm::ivec2 neighboring_tile(glm::ivec2 start, Direction dir);
+    glm::ivec2 adjacent_tile();
+    FeatureType get_feature(glm::ivec2 tile);
 
-    void player_action();
+    void change_feature(glm::ivec2 tile, FeatureType new_feature);
+
 
 private:
     void generate_tile(int x, int y, int worldx, int worldy);
@@ -47,6 +51,8 @@ private:
     glm::ivec2 _world_pos;
     glm::ivec2 _dimensions;
     Person _player;
+    std::map<std::pair<int, int>, FeatureType> _changes;
+
     float _zoom;
     int _tiles_to_render;
 

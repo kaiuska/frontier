@@ -7,30 +7,36 @@
 #include <string>
 #include <unistd.h>
 
+//#include "types.h"
 #include "utils.h"
 #include "shader.h"
 #include "sprite.h"
 
-extern glm::vec3 button_bg_color;
 
 class Button : public Sprite
 {
 public:
     Button();
-    Button(std::string text, float text_scale, glm::vec2 pos, glm::vec2 size);
-    void init(std::string text, float text_scale, glm::vec2 pos, glm::vec2 size);
-    void draw(Shader& shader, Shader& text_shader);
+    Button(std::string text, float text_scale, glm::vec2 pos, glm::vec2 size, int action);
+    Button(std::string text, float text_scale, glm::vec2 pos, glm::vec2 size, int action, unsigned int texID, int subtex);
+    void init(std::string text, float text_scale, glm::vec2 pos, glm::vec2 size, int action);
+    virtual void draw(Shader& shader, Shader& text_shader);
     void set_position(glm::vec2 pos);
     glm::vec4 get_rect();
     void click();
     void set_text(const std::string& text);
+    void set_image(unsigned int texID, int subtex);
+    int get_action();
     
 
 
 private:
     std::string _text;
+    int _action;
     glm::vec2 _text_pos;
     float _text_scale;
+    Sprite _image;
+    bool _has_image;
 };
 
 #endif

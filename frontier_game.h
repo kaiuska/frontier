@@ -9,7 +9,6 @@
 #include <string>
 #include <map>
 
-#include "asset_management.h"
 #include "utils.h"
 #include "shader.h"
 #include "tile.h"
@@ -24,21 +23,22 @@
 #include <algorithm>
 
 
-
-
-
 class FrontierGame
 {
 public:
     FrontierGame();
     void play();
     void draw();
+    
 
     bool running();
-
+    bool perform_action(ActionType action);
+    bool build_feature(FeatureType feature);
+    void clock_tick();
 private:
     GLFWwindow *create_window();
     bool process_input(GLFWwindow *window, Map& map ,float dt);
+
     static void framebuffer_size_callback(GLFWwindow* window, int wid, int hei);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
@@ -48,8 +48,15 @@ private:
     Shader _main_shader;
     Shader _text_shader;
     Map _map;
+    MainMenu _main_menu;
 
-    bool _running;
+    GameState _state;
+
 
     float _last_key_time;
+    int _year;
+    int _day;
+    int _hour;
+    int _min;
+    int _sec;
 };

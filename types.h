@@ -4,6 +4,21 @@
 
 /* Enums with a cooresponding texture are given unique number codes */
 
+enum GameState{
+    NORMAL,
+    AWAITING_ACTION,
+    CRASH
+};
+
+enum ActionType{
+    NONE = 0,
+    WAITING,
+    CHOP,
+    BUILD,
+    PLANT,
+};
+
+
 enum TurnDirection{
     RIGHT = 0,
     LEFT = 1
@@ -19,14 +34,14 @@ enum MoveDirection{
 
 // directions: 10-17    (directions use sprite sheet)
 enum Direction{
-    NORTH = 10,
-    NORTHEAST = 11,
-    EAST = 12, 
-    SOUTHEAST = 13,
-    SOUTH = 14,
-    SOUTHWEST = 15,
-    WEST = 16,
-    NORTHWEST = 17
+    NORTH = 0,
+    NORTHEAST = 1,
+    EAST = 2, 
+    SOUTHEAST = 3,
+    SOUTH = 4,
+    SOUTHWEST = 5,
+    WEST = 6,
+    NORTHWEST = 7
 };
 
 // tiles: 100-199
@@ -46,8 +61,23 @@ enum FeatureType{
     BUSH,
     FERN,
     LONG_GRASS,
+
+    // buildings 250-299
+    CABIN_WALL = 250,
+    CABIN_WALL_NORTH_CORNER = 251,
+    CABIN_WALL_NORTHEAST,
+    CABIN_WALL_EAST_CORNER,
+    CABIN_WALL_SOUTHEAST,
+    CABIN_WALL_SOUTH_CORNER,
+    CABIN_WALL_SOUTHWEST,
+    CABIN_WALL_WEST_CORNER,
+    CABIN_WALL_NORTHWEST,
+
+
     // agriculture: 3xx
     TILLED_SOIL = 300,
+    CORN = 301,
+    CORN_STAGE_0 = 301,
     CORN_STAGE_1,
     CORN_STAGE_2,
     CORN_STAGE_3,

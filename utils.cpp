@@ -5,6 +5,8 @@
 
 //#include "rands.h"
 
+bool mouse_clicked = false;;
+glm::vec2 click_pos = glm::vec2(0, 0);
 
 const float TURN_LENGTH = 0.05;
 
@@ -32,7 +34,7 @@ const float feature_hei = 240.0f;
 
 
 const float ELEVATION_OFFSET = 0.1f;
-const int MAX_ELEVATION = 32;
+const int MAX_ELEVATION = 64;
 const int MIN_ELEVATION = -24;
 
 
@@ -101,6 +103,27 @@ void render_text(Shader &s, std::string text, float x, float y, float scale, glm
 }
 
 
+Direction reverse_direction(Direction dir)
+{
+    if(dir == NORTH)
+        dir = SOUTH;
+    else if(dir == NORTHEAST)
+        dir = SOUTHWEST;
+    else if(dir == EAST)
+        dir = WEST;
+    else if(dir == SOUTHEAST)
+        dir = NORTHWEST;
+    else if(dir == SOUTH)
+        dir = NORTH;
+    else if(dir == SOUTHWEST)
+        dir = NORTHEAST;
+    else if(dir == WEST)
+        dir = EAST;
+    else if(dir == NORTHWEST)
+        dir = SOUTHEAST;
+
+    return dir;
+}
 
 
 // place tile (ndc) 

@@ -7,30 +7,30 @@ Feature::Feature(){}
 
 Feature::Feature(glm::vec2 pos, FeatureType feature)
 {
-    _type = feature;
-    _textureID = textures[_type];
 
-    _vaoID = vertex_arrays[_type];
-    set_position(pos);
-
-
-    _elevation = 0;
-    _tex_dimensions = get_tex_dimensions();
-    set_size(glm::vec2(TILE_WID, _tex_dimensions.y));
+    create(pos, feature);
 }
 
 
 void Feature::create(glm::vec2 pos, FeatureType feature)
 {
+    printf("feature.create() %s\n", feature_defs[feature].name.c_str());
     _type = feature;
-    //printf("feature_position: %f %f %f\n", pos.x, pos.y, pos.z);
-    _textureID = textures[_type];
+    //_textureID = textures[_type];
+    _vaoID = vertex_arrays[_type];
+
+    _textureID = feature_defs[_type].texID;
+    //_subtex = feature_defs[_type].subtex;
+    //_textureID = feature_defs[_type].texID;
+
+
 
     _tex_dimensions = get_tex_dimensions();
     set_position(glm::vec2(pos.x, pos.y + _tex_dimensions.y - TILE_SURFACE_HEI));
 
-    _size = glm::vec2(TILE_WID, _tex_dimensions.y);
+    set_size(glm::vec2(TILE_WID, _tex_dimensions.y));
     Sprite::create(_pos, _size, _textureID);
+    set_subtex(feature_defs[_type].subtex);
 
     _elevation = 0;
 

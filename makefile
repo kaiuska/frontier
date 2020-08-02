@@ -1,8 +1,8 @@
 
-objects = tile.o feature.o utils.o menu.o button.o shader.o sprite.o person.o map.o frontier_game.o asset_management.o
+objects = tile.o feature.o utils.o menu.o button.o shader.o sprite.o person.o map.o frontier_game.o resources.o
 
 libs = -lGL -lX11 -lpthread -lXrandr -lXi -ldl -lm -lglfw -lfreetype
-cflags = --std=c++11 `pkg-config --cflags freetype2` -g
+cflags = --std=c++17 `pkg-config --cflags freetype2` -g
 
 
 all: frontier $(objects)
