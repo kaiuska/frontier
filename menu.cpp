@@ -45,10 +45,13 @@ void MainMenu::draw(Shader& shader, Shader& text_shader)
     shader.setMat4("model", model);
     shader.setMat4("view", glm::mat4(1.0f));
     shader.setMat4("projection", projection);
+    shader.setVec4("highlight", glm::vec4(0.0f));
+    //set_highlight(glm::vec4(0.0f));
 
     float t_wid = 1.0f;
     shader.setInt("subtex", _subtex);
     shader.setFloat("tex_wid", t_wid);
+
 
     glBindVertexArray(_vaoID);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); 
@@ -94,6 +97,11 @@ ActionType MainMenu::get_action(GLFWwindow *window)
         }if(glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS){
             printf("Action: Build\n");
             _action = BUILD;
+            key_pressed = true;
+
+        }if(glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS){
+            printf("Action: Till\n");
+            _action = TILL;
             key_pressed = true;
 
         }if(glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS){
@@ -173,9 +181,14 @@ void MainMenu::show_action_prompt()
                 glm::vec2(_pos.x + 10, _pos.y - 40.0f),
                 glm::vec2(_size.x - 30.0f, 30),
                 CHOP));
-    _buttons.push_back(Button("Plant", 
+    _buttons.push_back(Button("Till", 
                 0.5f, 
                 glm::vec2(_pos.x + 10, _pos.y - 70.0f),
+                glm::vec2(_size.x - 30.0f, 30),
+                TILL));
+    _buttons.push_back(Button("Plant", 
+                0.5f, 
+                glm::vec2(_pos.x + 10, _pos.y - 100.0f),
                 glm::vec2(_size.x - 30.0f, 30),
                 PLANT));
     _buttons[_highlight].set_highlight(glm::vec4(1.0f));
@@ -247,6 +260,7 @@ int MainMenu::click(glm::vec2 mouse)
     int action = -1;
 
     for(int i = 0; i < _buttons.size(); i++){
+        printf("checking click: %s\n", _buttons[i].get_text().c_str());
         if(_buttons[i].is_clicked(mouse)){
             _buttons[i].click();
             action = _buttons[i].get_action();

@@ -2,14 +2,17 @@
 
 
 
-Map::Map(int tilesx, int tilesy)
+Map::Map(int worldx, int worldy, int tilesx, int tilesy)
+    /*
     : _dimensions(tilesx, tilesy), 
       _center(tilesx/2, tilesy/2),
-      _world_pos(tilesx/2, tilesy/2),
-      //_world_pos(0,0),
+      _world_pos(worldx, worldy),
       _zoom(1.0f),
       _tiles_to_render(40)
+      */
 {
+    create(worldx, worldy, tilesx, tilesy);
+    /*
     init();
 
     _camera_pos = glm::vec3(_tiles[(int)_center.x][(int)_center.y]->get_position(), 1.0f);
@@ -17,17 +20,17 @@ Map::Map(int tilesx, int tilesy)
     _camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
     _camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-    _player.init(_center, _camera_pos, PLAYER);
+    _player.init(_world_pos, _camera_pos, PLAYER);
+    _player_elevation = _tiles[_center.x][_center.y]->get_elevation();
 
-    //printf("player tile: %d %d\n", _player.get_tile().x, _player.get_tile().y);
-    //printf("center %d %d\n", _center.x, _center.y);
+    */
 }
 
-void Map::create(int tilesx, int tilesy)
+void Map::create(int worldx, int worldy, int tilesx, int tilesy)
 {
     _dimensions = glm::ivec2(tilesx, tilesy);
     _center = glm::ivec2(tilesx/2, tilesy/2);
-    _world_pos = glm::ivec2(tilesx/2, tilesy/2);
+    _world_pos = glm::ivec2(worldx, worldy);
     _zoom = 1.0f;
     _tiles_to_render = 40;
 
@@ -37,6 +40,7 @@ void Map::create(int tilesx, int tilesy)
     _camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
     _player.init(_center, _camera_pos, PLAYER);
+    _player_elevation = _tiles[_center.x][_center.y]->get_elevation();
 }
 
 void Map::draw(Shader& shader)
@@ -65,6 +69,11 @@ void Map::draw(Shader& shader)
 
             shader.setMat4("view", view);
             shader.setMat4("projection", projection);
+
+            // calculate fade for tiles of differing elevation
+            int diff_elevation = -abs(_tiles[x][y]->get_elevation()-_player_elevation); 
+            float fade = (float)diff_elevation / (float)(MAX_ELEVATION-WATER_LEVEL);
+            _tiles[x][y]->set_highlight(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f) * fade * 1.0f);
 
             _tiles[x][y]->draw(shader);
             if(x == _dimensions.x/2 && y == _dimensions.y/2){
@@ -95,30 +104,28 @@ void Map::init()
         for(int y = 0; y < _dimensions.y; y++){
 
             _tiles[x][y] = new Tile();
-            generate_tile(x, y, x, y);
+            generate_tile(x, y, _world_pos.x-_dimensions.x/2+x, _world_pos.y-_dimensions.y/2+y);
         }
     }
 }
 
 void Map::generate_tile(int x, int y, int worldx, int worldy)
 {
-    //glm::vec2 v((float)(500+worldx)*0.15f, (float)(worldy)*0.15f);
-    //glm::vec2 v((float)(500+worldx)*0.1f, (float)(worldy)*0.1f);
-    glm::vec2 v((float)(500+worldx)*0.025f, (float)(worldy)*0.025f);
+    glm::vec2 v((float)(worldx+320)*0.0100f, (float)(worldy-119)*0.010f);
 
-    float r =  
-        noise(v * (1.0f/30)) * 3.0f + 
-        noise(v * (1.0f/25)) * 0.8f +
-        //noise(v * (1.0f/17)) * 1.3f +
-        noise(v * (1.0f/13)) * 0.6f +
-        noise(v * (1.0f/9)) * 0.4f +
-        noise(v * (1.0f/4)) * 0.2f;
-
+    float r = 
+        noise(v * (1.0f/10.0f)) * 1.8f + 
+        noise(v * (1.0f/5.0f))  * 1.3f + 
+        noise(v * (1.0f/3.0f))  * 0.5f + 
+        noise(v * (1.0f/2.0f))  * 0.35f + 
+        noise(v * (1.0f/1.5f))  * 0.12f +
+        noise(v * (1.0f/1.1f))  * 0.08f +
+        noise(v * (2.0f))  * 0.12f;
 
     r *= (2*r-1) * (MAX_ELEVATION);
-    
 
     int elevation = round(r); 
+    printf("r = %f, elevation = %d\n", r, elevation);
 
     //printf("noise: %f\n", r);
     if(elevation > MAX_ELEVATION)
@@ -130,11 +137,10 @@ void Map::generate_tile(int x, int y, int worldx, int worldy)
     TileType tile = GREEN_GRASS;
     FeatureType feature = NO_FEATURE;
 
-    if(elevation <= 4){
+    if(elevation <= WATER_LEVEL){
         tile = WATER;
-        elevation = 4;
+        elevation = WATER_LEVEL;
     }else{
-        
         if(noise(v * (1.0f/20.0f)) * 20.0f > 0.5)
             tile = DEAD_GRASS;
 
@@ -144,9 +150,16 @@ void Map::generate_tile(int x, int y, int worldx, int worldy)
             printf("loading tile\n");
         }else{
 
-            glm::vec2 v1((float)(300+worldx)*0.25f, (float)(300+worldy)*0.25f);
+            glm::vec2 v1((float)(500+worldx)*0.25f, (float)(worldy)*0.25f);
 
             float feature_roll = 
+                noise(v * (1.0f/0.01f)) * 0.23f + 
+                noise(v * (1.0f/0.1f)) * 0.19f + 
+                noise(v * (1.0f/0.13f)) * 1.1f + 
+                noise(v * (1.0f/0.08f)) * 0.853f + 
+                noise(v * (1.0f/0.03f)) * 3.2853f + 
+                noise(v * (1.0f/0.05f)) * 1.938f;
+/*
                 noise(v * 132.2324f) -
                 noise(v * 140.2324f) +
                 noise(v * 32.2324f) +
@@ -158,15 +171,29 @@ void Map::generate_tile(int x, int y, int worldx, int worldy)
                 noise(v * 1.8654f) +
                 noise(v * 1.1435f) +
                 noise(v * 0.0954f);
+                */
 
-            if(feature_roll < 0.2f && feature_roll > 0.1f){
-                feature = TREE;
-            }else if(feature_roll < 0.25f && feature_roll > 0.2f){
-                feature = OLD_TREE;
-            }else if(feature_roll < 0.28f && feature_roll > 0.25f){
-                feature = FERN;
-            }else if(feature_roll < 0.35f && feature_roll > 0.3f){
-                feature = LONG_GRASS;
+
+            float prairie_roll = noise(v * (1.0f/4.0f)) + 
+                noise(v * (1.0f/2.0f)) * 0.4f + 
+                noise(v * (1.0f/1.0f)) * 1.29f+ 
+                noise(v * (1.0f/0.4f)) * 0.192f+ 
+                noise(v * (1.0f/0.04f)) * 0.34f;
+
+            if(prairie_roll < 0.40f && prairie_roll > 0.23f){
+                //feature = CORN_STAGE_5;
+                feature = NO_FEATURE;
+            }else{
+                    
+                if(feature_roll < 0.2f && feature_roll > 0.1f){
+                    feature = TREE;
+                }else if(feature_roll < 0.25f && feature_roll > 0.2f){
+                    feature = OLD_TREE;
+                }else if(feature_roll < 0.28f && feature_roll > 0.25f){
+                    feature = FERN;
+                }else if(feature_roll < 0.35f && feature_roll > 0.3f){
+                    feature = LONG_GRASS;
+                }
             }
 
         }
@@ -195,14 +222,6 @@ void Map::zoom(float inc)
     }
 }
 
-void Map::change_feature(glm::ivec2 tile, FeatureType new_feature)
-{
-    glm::ivec2 world_pos = _tiles[tile.x][tile.y]->get_world_pos();
-    printf("changing feature %s at %d %d \n", feature_defs[new_feature].name.c_str(), world_pos.x, world_pos.y);
-
-    _changes[std::pair<int, int>(world_pos.x, world_pos.y)] = new_feature;
-    _tiles[tile.x][tile.y]->set_feature(new_feature);
-}
 
 glm::ivec2 Map::adjacent_tile()
 {
@@ -342,6 +361,30 @@ void Map::move_player(MoveDirection direction)
     _camera_pos.x = _tiles[(int)_center.x][(int)_center.y]->get_position().x;
     _camera_pos.y = _tiles[(int)_center.x][(int)_center.y]->get_position().y;
 
+    _player_elevation = _tiles[_center.x][_center.y]->get_elevation();
+
     printf("world_pos: %d %d\n", _world_pos.x, _world_pos.y);
 }
 
+void Map::change_feature(glm::ivec2 tile, FeatureType new_feature)
+{
+    glm::ivec2 world_pos = _tiles[tile.x][tile.y]->get_world_pos();
+    printf("changing feature %s at %d %d \n", feature_defs[new_feature].name.c_str(), world_pos.x, world_pos.y);
+
+    _changes[std::pair<int, int>(world_pos.x, world_pos.y)] = new_feature;
+    _tiles[tile.x][tile.y]->set_feature(new_feature);
+}
+
+
+void Map::change_tile(glm::ivec2 tile, TileType new_tile)
+{   
+    glm::ivec2 world_pos = _tiles[tile.x][tile.y]->get_world_pos();
+
+    _tiles[tile.x][tile.y]->set_type(new_tile);
+}
+
+
+FeatureType Map::get_type()
+{
+
+}

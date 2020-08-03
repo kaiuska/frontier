@@ -123,3 +123,7 @@ int Button::get_action()
     return _action;
 }
 
+std::string Button::get_text()
+{
+    return _text;
+}

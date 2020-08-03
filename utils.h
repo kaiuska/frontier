@@ -23,8 +23,8 @@
 #define DEFAULT_HEI 800
 #define DEFAULT_WID 600
 
-#define TILESX 80
-#define TILESY 80
+#define TILESX 100
+#define TILESY 100
 
 // turn length of 5 seconds
 extern const float TURN_LENGTH;
@@ -50,6 +50,7 @@ extern const float VOXEL_HEI; // verticlal step in world space per unit elevatio
 extern const float ELEVATION_OFFSET;
 extern const int MAX_ELEVATION; 
 extern const int MIN_ELEVATION;
+extern const int WATER_LEVEL;
 
 
 

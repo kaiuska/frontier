@@ -27,7 +27,6 @@ FeatureType feature_list[] = {
 
 
     // agriculture
-    TILLED_SOIL,
     CORN_STAGE_1,
     CORN_STAGE_2,
     CORN_STAGE_3,
@@ -63,7 +62,8 @@ PersonType person_list[] = {
 void init_textures()
 {
     textures[DEAD_GRASS]    = load_texture("textures/tiles/dead_grass1-tall-iso.png", 1);
-    textures[WATER]         = load_texture("textures/tiles/water1-56x288-iso.png", 1);
+    textures[TILLED_SOIL]   = load_texture("textures/tiles/tilled_soil-iso.png", 1); 
+    textures[WATER]         = load_texture("textures/tiles/water3-64x286-iso.png", 1);
     textures[GREEN_GRASS]   = load_texture("textures/tiles/green_grass2-tall-iso.png", 1);
     textures[TREE]          = load_texture("textures/features/tree1-64x120-iso.png", 1);
     textures[OLD_TREE]      = load_texture("textures/features/tree1-64x184-iso.png", 1);
@@ -73,7 +73,6 @@ void init_textures()
     textures[BUTTON]        = load_texture("textures/controls/button1_iso.png", 1);
     textures[MAIN_MENU]     = load_texture("textures/controls/main_menu_background.png", 1);
     textures[PLAYER]        = load_texture("textures/people/player1-iso.png", 1);
-    textures[TILLED_SOIL]   = load_texture("textures/features/agriculture/tilled_soil-iso.png", 1); 
     textures[CORN]          = load_texture("textures/features/agriculture/corn-iso.png", 1);
     textures[CABIN_WALL]    = load_texture("textures/features/building/log_cabin_walls-iso.png", 1);
     textures[DIRECTION_INDICATOR] = load_texture("textures/people/direction_indicators-iso.png", 1);

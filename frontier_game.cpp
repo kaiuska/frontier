@@ -21,7 +21,12 @@ FrontierGame::FrontierGame() :
     init_vertex_arrays();
     load_font("textures/font/technicality1.ttf", text_hei);
     init_textures();
-    _map.create(TILESX, TILESY);
+
+
+    _map.create(700, 300, TILESX, TILESY);
+
+
+
     _main_menu.init(glm::vec2(scr_wid/2-menu_wid, scr_hei/4), glm::vec2(menu_wid, scr_hei*3/4));
 }
 
@@ -62,6 +67,9 @@ void FrontierGame::play()
                 printf("get construction %d  %s\n",new_feature, feature_defs[(FeatureType)new_feature].name.c_str());
                     
                 build_feature((FeatureType)new_feature);
+            }
+            if(action == TILL){
+                _map.change_tile(_map.adjacent_tile(), TILLED_SOIL);
             }
 
             //perform_action(action);
@@ -232,16 +240,17 @@ GLFWwindow *FrontierGame::create_window()
 void FrontierGame::framebuffer_size_callback(GLFWwindow* window, int wid, int hei)
 {
     //glfwGetWindowSize(window, &w, &h);
-    //resized = true;
-    glViewport(0,0,wid,hei);
 
+    //glViewport(0,0,wid,hei);
+    
     int h, w;
     glfwGetFramebufferSize(window, &w, &h);
     scr_wid = w;
     scr_hei = h;
+    glViewport(0, 0 ,wid ,hei);
     
     resized = true;
-    //printf("window size %f, %f\n", scr_wid, scr_hei);
+    printf("resize %f, %f\n", scr_wid, scr_hei);
 }
 
 void FrontierGame::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -251,6 +260,7 @@ void FrontierGame::mouse_button_callback(GLFWwindow* window, int button, int act
     //printf("mouse button pressed\n");
 
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+        printf("mouse click %lf %lf\n", x, y);
         click_pos.x = x;
         click_pos.y = y;
         mouse_clicked = true;

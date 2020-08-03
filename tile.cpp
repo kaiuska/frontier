@@ -32,6 +32,7 @@ void Tile::draw(Shader shader)
 {
     Sprite::draw(shader);
 
+    _feature.set_highlight(_highlight);
     _feature.draw(shader);
 }
 
@@ -41,6 +42,12 @@ void Tile::set_feature(FeatureType feature)
     _feature.create(_pos, feature);
 }
 
+void Tile::set_type(TileType type)
+{
+    _type = type;
+    set_textureID(textures[type]);
+    set_subtex(0);
+}
 
 
 

@@ -23,10 +23,13 @@ public:
     void draw(Shader shader);
     FeatureType get_feature_type();
     void set_feature(FeatureType feature);
+    void set_type(TileType type);
     Feature _feature;
     TileType get_type();
+
     void set_elevation(int elevation);
     int get_elevation();
+
     void set_world_pos(int x, int y);
     glm::ivec2 get_world_pos();
 

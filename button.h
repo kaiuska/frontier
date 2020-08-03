@@ -25,6 +25,7 @@ public:
     glm::vec4 get_rect();
     void click();
     void set_text(const std::string& text);
+    std::string get_text();
     void set_image(unsigned int texID, int subtex);
     int get_action();
     

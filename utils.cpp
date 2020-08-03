@@ -18,8 +18,11 @@ std::map<unsigned int, unsigned int> vertex_arrays;
 
 std::map <char, Character> characters;
 
+//float TILE_WID = 64.0f;
+//float TILE_HEI = 258.0f;
+
 float TILE_WID = 64.0f;
-float TILE_HEI = 286.0f;
+float TILE_HEI = 256.0f;
 
 const float TILE_SURFACE_HEI = TILE_WID/2;
 
@@ -34,12 +37,14 @@ const float feature_hei = 240.0f;
 
 
 const float ELEVATION_OFFSET = 0.1f;
-const int MAX_ELEVATION = 64;
-const int MIN_ELEVATION = -24;
+//const int MAX_ELEVATION = 64;
+const int MAX_ELEVATION = 34;
+const int MIN_ELEVATION = 0;
+const int WATER_LEVEL = 1;
 
 
 
-const glm::vec3 text_color(0.0f, 0.0f, 0.0f);
+const glm::vec3 text_color(0.1f, 0.1f, 0.1f);
 const float text_hei = 40;
 
 
@@ -47,25 +52,14 @@ unsigned int text_vao;
 unsigned int text_vbo;
 
 
-//std::map<int, TileDef> tile_definitions = {
-//    { TREE,         {false} },
-//    { OLD_TREE,     {false} },
-//    { BUSH,         {true} },
-//    { FERN,         {true} },
-//    { LONG_GRASS,   {false} }
-//};
-
-
 void render_text(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color)
 {
     // activate corresponding render state	
     s.use();
-    //glUniform3f(glGetUniformLocation(s.ID, "textColor"), color.x, color.y, color.z);
     s.setVec3("textColor", color);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(text_vao);
 
-    //printf("writing text %s \n", text.c_str());
     // iterate through all characters
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++)

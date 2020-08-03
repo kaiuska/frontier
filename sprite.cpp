@@ -59,14 +59,13 @@ void Sprite::draw(Shader shader)
 
     shader.setVec4("highlight", _highlight);
 
-
     glm::mat4 model(1.0f);
     model = glm::scale(model, glm::vec3(_size.x, _size.y, 1.0f));
 
     float t_wid = (float)TILE_WID/_tex_dimensions.x;
     shader.setInt("subtex", _subtex);
     shader.setFloat("tex_wid", t_wid);
-    //printf("t_wid: %f\n", t_wid);
+    //printf("t_wid: f\n", t_wid);
 
     model = glm::translate(model, glm::vec3(_pos.x/_size.x, _pos.y/_size.y, 0.0f));
     shader.setMat4("model", model);
@@ -161,10 +160,10 @@ glm::vec2 Sprite::get_tex_dimensions()
 
 bool Sprite::is_clicked(glm::vec2 mouse)
 {
-    if(mouse.x > scr_wid / 2 - _pos.x && mouse.x < scr_wid / 2 + _pos.x+_size.x &&
-            mouse.y > scr_hei/2 + _pos.y && mouse.y < scr_hei/2- _pos.y-_size.y){
-    //if(mouse.x > _pos.x && mouse.x < _pos.x+_size.x &&
-    //        mouse.y > _pos.y && mouse.y < _pos.y+_size.y){
+
+    glm::vec2 pos_scr(_pos.x + scr_wid/2, -1 * _pos.y + scr_wid/2 -_size.y);
+    if(mouse.x > pos_scr.x && mouse.x < pos_scr.x+_size.x &&
+            mouse.y > pos_scr.y && mouse.y < pos_scr.y+_size.y){
         return true;
     }
     return false;

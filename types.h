@@ -16,6 +16,7 @@ enum ActionType{
     CHOP,
     BUILD,
     PLANT,
+    TILL
 };
 
 
@@ -48,6 +49,7 @@ enum Direction{
 enum TileType{
     GREEN_GRASS = 100,
     DEAD_GRASS,
+    TILLED_SOIL,
     WATER,
     NO_TILE
 };
@@ -75,9 +77,8 @@ enum FeatureType{
 
 
     // agriculture: 3xx
-    TILLED_SOIL = 300,
-    CORN = 301,
-    CORN_STAGE_0 = 301,
+    CORN = 300,
+    CORN_STAGE_0 = 300,
     CORN_STAGE_1,
     CORN_STAGE_2,
     CORN_STAGE_3,
