@@ -4,9 +4,8 @@ An isometric tile-based game. Currently just generates maps and allows your 18th
 
 Inspired by the 1990's survival game Unreal World.
 
-![character](fronteir.png?raw=true)
 
-![zoomed out](fronteir-zoomed-out.png?raw=true)
+![](misc/frontier-demo.gif)
 
 * Written in C++ with OpenGL version 3.3
 * Uses perlin-Noise to procedurally generate terrain with elevation out of 2d, isometric tiles.
