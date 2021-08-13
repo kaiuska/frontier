@@ -25,6 +25,8 @@ Map::~Map()
 
 }
 
+
+
 void Map::create(int worldx, int worldy, int tilesx, int tilesy)
 {
     _dimensions = glm::ivec2(tilesx, tilesy);
@@ -33,6 +35,12 @@ void Map::create(int worldx, int worldy, int tilesx, int tilesy)
     _chunk = glm::ivec2(_world_pos.x/TILESX, _world_pos.y/TILESY);
     _zoom = 1.0f;
     _tiles_to_render = 40;
+    _projection_zoom = glm::ortho(
+            _zoom * -(float)scr_wid / 2, 
+            _zoom *  (float)scr_wid / 2, 
+            _zoom * -(float)scr_hei / 2, 
+            _zoom *  (float)scr_hei / 2, 
+            -20.0f,  10.0f); 
 
     init();
     _camera_pos = glm::vec3(_tiles[_center.x][_center.y]->get_position(), 1.0f);
@@ -44,17 +52,22 @@ void Map::create(int worldx, int worldy, int tilesx, int tilesy)
 
 }
 
+
+
+
 void Map::draw(Shader& shader)
 {
     
     glm::mat4 view(1.0f); 
     view = glm::lookAt(_camera_pos, _camera_pos + _camera_front, _camera_up);
+    /*
     glm::mat4 projection = glm::ortho(
             _zoom * -(float)scr_wid / 2, 
             _zoom *  (float)scr_wid / 2, 
             _zoom * -(float)scr_hei / 2, 
             _zoom *  (float)scr_hei / 2, 
             -20.0f,  10.0f); 
+    */
 
     glm::mat4 model = glm::mat4(1.0f);
 
@@ -69,7 +82,7 @@ void Map::draw(Shader& shader)
         for(int y = beg_y; y < end_y; y++){
 
             shader.setMat4("view", view);
-            shader.setMat4("projection", projection);
+            shader.setMat4("projection", _projection_zoom);
 
             // calculate fade for tiles of differing elevation
             int diff_elevation = -abs(_tiles[x][y]->get_elevation()-_player_elevation); 
@@ -229,6 +242,12 @@ void Map::zoom(float inc)
         _zoom += inc;
         _tiles_to_render += 10;
     }
+    _projection_zoom = glm::ortho(
+            _zoom * -(float)scr_wid / 2, 
+            _zoom *  (float)scr_wid / 2, 
+            _zoom * -(float)scr_hei / 2, 
+            _zoom *  (float)scr_hei / 2, 
+            -20.0f,  10.0f); 
 }
 
 
@@ -267,8 +286,6 @@ glm::ivec2 Map::adjacent_tile()
 
 bool save_changes()
 {
-//    std::fstream fout;
-//    fout.open(_name, ios::out);
 }
 
 FeatureType Map::get_feature(glm::ivec2 tile)

@@ -38,6 +38,7 @@ extern short *rands;
 
 extern bool mouse_clicked;
 extern glm::vec2 click_pos;
+extern glm::vec2 mouse_pos;
 
 
 extern float scr_wid;

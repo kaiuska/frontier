@@ -16,7 +16,9 @@ enum ActionType{
     CHOP,
     BUILD,
     PLANT,
-    TILL
+    TILL,
+    CANCEL,
+    QUIT,
 };
 
 

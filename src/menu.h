@@ -23,13 +23,12 @@ public:
     void draw(Shader& shader, Shader& text_shader);
     void resize(glm::vec2 pos, glm::vec2 size);
 
-    //bool is_clicked(glm::vec2 mouse);
     int click(glm::vec2 mouse);
 
     void clear_menu();
     void show_construction_prompt();
     void show_action_prompt();
-
+    void hide_action_prompt();
 
     ActionType get_action(GLFWwindow *window);
     int get_construction(GLFWwindow *window);

@@ -29,6 +29,7 @@ public:
     void set_image(unsigned int texID, int subtex);
     int get_action();
     
+    
     void set_selected(bool selected);
 
 

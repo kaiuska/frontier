@@ -58,6 +58,9 @@ private:
     Person _player;
     int _player_elevation;
 
+
+    glm::mat4 _projection_zoom;
+
     std::map<std::pair<int, int>, TileData> _changes;
 
     float _zoom;

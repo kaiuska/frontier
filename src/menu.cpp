@@ -16,19 +16,24 @@ MainMenu::MainMenu(glm::vec2 pos, glm::vec2 size)
 
 void MainMenu::init(glm::vec2 pos, glm::vec2 size)
 {
+    std::cout << "main menu: pos:("<<pos.x <<"," << pos.y<<")"<<" size:("<<size.x<<","<<size.y<<")\n";
     Sprite::create(pos, size, textures[MAIN_MENU]);
     
     glm::vec2 button_pos(_pos.x + _border_wid, _pos.y - _border_wid);
     //_button.init("test_button", 0.5f, _pos, glm::vec2(_size.x - 10.0f, 10));
+    _projection = glm::ortho(
+                -(float)scr_wid/2, 
+                (float)scr_wid/2, 
+                -(float)scr_hei/2, 
+                (float)scr_hei/2, 
+                -20.0f, 10.0f); 
 }
 
 void MainMenu::draw(Shader& shader, Shader& text_shader)
 {
-    /*
-    if(_highlight >= 0 && _highlight < _buttons.size()){
-        _buttons[_highlight].set_highlight(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
-    }
-    */
+    //if(_highlight >= 0 && _highlight < _buttons.size()){
+    //    _buttons[_highlight].set_highlight(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
+    //}
 
     glBindTexture(GL_TEXTURE_2D, _textureID);
     glActiveTexture(GL_TEXTURE0);
@@ -37,16 +42,10 @@ void MainMenu::draw(Shader& shader, Shader& text_shader)
     glm::mat4 model(1.0f);
     model = glm::scale(model, glm::vec3(_size.x, _size.y, 1.0f));
     model = glm::translate(model, glm::vec3(_pos.x/_size.x, _pos.y/_size.y, 0.0f));
-    glm::mat4 projection = glm::ortho(
-                -(float)scr_wid/2, 
-                (float)scr_wid/2, 
-                -(float)scr_hei/2, 
-                (float)scr_hei/2, 
-                -20.0f, 10.0f); 
 
     shader.setMat4("model", model);
     shader.setMat4("view", glm::mat4(1.0f));
-    shader.setMat4("projection", projection);
+    shader.setMat4("projection", _projection);
     shader.setVec4("highlight", glm::vec4(0.0f));
     //set_highlight(glm::vec4(0.0f));
 
@@ -54,15 +53,14 @@ void MainMenu::draw(Shader& shader, Shader& text_shader)
     shader.setInt("subtex", _subtex);
     shader.setFloat("tex_wid", t_wid);
 
-
     glBindVertexArray(_vaoID);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); 
 
     for(int i = 0; i < _buttons.size(); i++){
+        //_buttons[i].set_highlight(glm::vec4(2.0f, 0.0f, 0.0f, 0.0f));
         _buttons[i].set_highlight(glm::vec4(2.0f, 0.0f, 0.0f, 0.0f));
         _buttons[i].draw(shader, text_shader);
     }
-    //_button.draw(shader, text_shader);
 }
 
 
@@ -81,6 +79,13 @@ void MainMenu::resize(glm::vec2 pos, glm::vec2 size)
         //_buttons[i].(glm::vec2(_pos.x + 10, _pos.y - 40 * i));
 
     }
+
+    _projection = glm::ortho(
+                -(float)scr_wid/2, 
+                (float)scr_wid/2, 
+                -(float)scr_hei/2, 
+                (float)scr_hei/2, 
+                -20.0f, 10.0f); 
 }
 
 
@@ -88,9 +93,30 @@ ActionType MainMenu::get_action(GLFWwindow *window)
 {
     bool key_pressed = false;
     _action = NONE;
-    //show_action_prompt();
-    while(!key_pressed){
+    do {
+
         glfwWaitEvents();
+
+        for (int i = 0; i < _buttons.size(); i++) {
+
+            double x, y;
+            glfwGetCursorPos(window, &x, &y);
+            mouse_pos = glm::vec2(x, y);
+            std::cout << "mouse_pos: ("<<mouse_pos.x<<", "<<mouse_pos.y<<")"<<std::endl;
+
+            if (_buttons[i].contains(mouse_pos)) {
+                _buttons[i].set_highlight(glm::vec4(1.0f));
+                if (mouse_clicked) {
+                    _action = (ActionType)click(click_pos);
+                    mouse_clicked = false;
+                } 
+            } else {
+                _buttons[i].set_highlight(glm::vec4(0.0f));
+            }
+
+        }
+
+
 
         if(glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS){
             printf("Action: Chop\n");
@@ -113,16 +139,19 @@ ActionType MainMenu::get_action(GLFWwindow *window)
             key_pressed = true;
 
         }if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
-            _action = NONE;
+            _action = QUIT;
             key_pressed = true;
 
         }if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
-            _action = NONE;
+            _action = QUIT;
             key_pressed = true;
         }
 
 
-    }
+
+    } while(_action == NONE);
+
+
     ActionType action = _action;
     _action = NONE;
     clear_menu();
@@ -133,7 +162,8 @@ int MainMenu::get_construction(GLFWwindow *window)
 {
     bool selected = false;
     FeatureType feature = NO_FEATURE;
-    //show_action_prompt();
+    show_action_prompt();
+
     while(!selected){
         glfwWaitEvents();
 
@@ -158,9 +188,11 @@ int MainMenu::get_construction(GLFWwindow *window)
         }if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
             feature = NO_FEATURE;
             selected = true;
+
         }if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS){
             feature = (FeatureType)_buttons[_highlight].get_action();
             selected = true;
+
         }if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
             feature = NO_FEATURE;
             selected = true;
@@ -241,6 +273,12 @@ void MainMenu::clear_menu()
     _buttons.clear();
 }
 
+void MainMenu::hide_action_prompt()
+{
+    printf("hide action prompt\n");
+    _buttons.clear();
+
+}
 
 void MainMenu::add_button(std::string text, glm::vec2 size, ActionType action)
 {
@@ -249,15 +287,11 @@ void MainMenu::add_button(std::string text, glm::vec2 size, ActionType action)
     _buttons.push_back(Button(text, 0.5f, glm::vec2(_pos.x + _border_wid, _pos.y - size.y*n_buttons - _border_wid), size, action));
 }
 
+
 void MainMenu::clear_buttons()
 {
-
     _buttons.clear();
 }
-
-
-
-
 
 
 
@@ -267,22 +301,15 @@ int MainMenu::click(glm::vec2 mouse)
     int action = -1;
 
     for(int i = 0; i < _buttons.size(); i++){
-        printf("checking click: %s\n", _buttons[i].get_text().c_str());
-        if(_buttons[i].is_clicked(mouse)){
+        if(_buttons[i].contains(mouse)){
             _buttons[i].click();
             action = _buttons[i].get_action();
+            printf("button %s clicked\n", _buttons[i].get_text().c_str());
+
         }
     }
     return action;
 }
-
-
-
-
-
-
-
-
 
 
 

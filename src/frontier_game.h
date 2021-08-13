@@ -14,7 +14,7 @@
 #include "tile.h"
 #include "feature.h"
 #include "button.h"
-//#include "menu.h"
+#include "menu.h"
 #include "sprite.h"
 #include "map.h"
 
@@ -48,9 +48,11 @@ private:
     Shader _main_shader;
     Shader _text_shader;
     Map _map;
-    //MainMenu _main_menu;
+    MainMenu _main_menu;
 
     GameState _state;
+
+    glm::mat3 _projection;
 
     float _last_key_time;
     int _year;

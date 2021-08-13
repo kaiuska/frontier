@@ -27,6 +27,18 @@ void Button::init(std::string text, float text_scale, glm::vec2 pos, glm::vec2 s
     _subtex = 0;
 
     set_position(pos);
+    //_projection = glm::ortho(
+    //            -(float)scr_wid/2, 
+    //            (float)scr_wid/2, 
+    //            -(float)scr_hei/2, 
+    //            (float)scr_hei/2, 
+    //            -20.0f, 10.0f); 
+    _projection = glm::ortho(
+                0.0f,
+                scr_wid,
+                0.0f,
+                scr_hei,
+                -20.0f, 10.0f); 
 }
 
 
@@ -58,19 +70,14 @@ void Button::draw(Shader& shader, Shader& text_shader)
     glm::mat4 model(1.0f);
     model = glm::scale(model, glm::vec3(_size.x, _size.y, 1.0f));
     model = glm::translate(model, glm::vec3(_pos.x/_size.x, _pos.y/_size.y, 0.0f));
-    glm::mat4 projection = glm::ortho(
-                -(float)scr_wid/2, 
-                (float)scr_wid/2, 
-                -(float)scr_hei/2, 
-                (float)scr_hei/2, 
-                -20.0f, 10.0f); 
+    //model = glm::translate(model, glm::vec3(_pos.x, _pos.y, 0.0f));
 
     shader.setMat4("model", model);
     shader.setMat4("view", glm::mat4(1.0f));
-    shader.setMat4("projection", projection);
+    //shader.setMat4("projection", _projection);
     //set_highlight(_highlight);
     if(_selected)
-        shader.setVec4("highlight", glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
+        shader.setVec4("highlight", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
 
     glBindVertexArray(_vaoID);
@@ -90,20 +97,9 @@ void Button::set_text(const std::string& text)
 
 glm::vec4 Button::get_rect()
 {
-    return glm::vec4(_pos, _pos.x + _size.x, _pos.y-_pos.y);
+    return glm::vec4(_pos.x, _pos.y, _pos.x + _size.x, _pos.y-_pos.y);
 }
 
-
-/*
-bool Button::is_clicked(glm::vec2 mouse)
-{
-    if(mouse.x > _pos.x && mouse.x < _pos.x+_size.x &&
-            mouse.y > _pos.y && mouse.y < _pos.y+_size.y){
-        return true;
-    }
-    return false;
-}
-*/
 
 void Button::click()
 {

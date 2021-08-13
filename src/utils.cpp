@@ -7,6 +7,8 @@
 
 bool mouse_clicked = false;;
 glm::vec2 click_pos = glm::vec2(0, 0);
+glm::vec2 mouse_pos = glm::vec2(0, 0);
+
 
 const float TURN_LENGTH = 0.05;
 

@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "shader.h"
 #include "utils.h"
@@ -38,7 +39,7 @@ public:
     void set_textureID(unsigned int texID);
     void set_vaoID(unsigned int vaoID);
 
-    virtual bool is_clicked(glm::vec2 mouse);
+    bool contains(glm::vec2 mouse);
 
     //virtual void click();
     //void set_elevation(int elevation);
@@ -55,6 +56,7 @@ protected:
     glm::vec2 _tex_dimensions;
     int _subtex;
     //glm::vec4 _texture_rect;
+    glm::mat4 _projection;
 };
 
 

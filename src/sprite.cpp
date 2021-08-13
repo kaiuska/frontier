@@ -33,6 +33,15 @@ void Sprite::create(glm::vec2 pos, glm::vec2 size, unsigned int texID, int subte
 
     set_position(pos);
     set_size(size);
+
+
+    //_projection = glm::ortho(
+    //            -(float)scr_wid/2, 
+    //            (float)scr_wid/2, 
+    //            -(float)scr_hei/2, 
+    //            (float)scr_hei/2, 
+    //            -20.0f, 10.0f); 
+
 }
 
 void Sprite::create(glm::vec2 pos, glm::vec2 size, unsigned int texID)
@@ -45,6 +54,7 @@ void Sprite::create(glm::vec2 pos, glm::vec2 size, unsigned int texID)
 
     set_position(pos);
     set_size(size);
+
 }
 
 void Sprite::draw(Shader shader)
@@ -61,14 +71,14 @@ void Sprite::draw(Shader shader)
 
     glm::mat4 model(1.0f);
     model = glm::scale(model, glm::vec3(_size.x, _size.y, 1.0f));
+    model = glm::translate(model, glm::vec3(_pos.x/_size.x, _pos.y/_size.y, 0.0f));
+    shader.setMat4("model", model);
 
     float t_wid = (float)TILE_WID/_tex_dimensions.x;
     shader.setInt("subtex", _subtex);
     shader.setFloat("tex_wid", t_wid);
     //printf("t_wid: f\n", t_wid);
 
-    model = glm::translate(model, glm::vec3(_pos.x/_size.x, _pos.y/_size.y, 0.0f));
-    shader.setMat4("model", model);
 
 
     glBindVertexArray(_vaoID);
@@ -157,17 +167,25 @@ glm::vec2 Sprite::get_tex_dimensions()
     return glm::vec2(w, h); 
 }
 
-
-bool Sprite::is_clicked(glm::vec2 mouse)
+bool Sprite::contains(glm::vec2 mouse)
 {
+    //glm::vec2 scr_pos(_pos.x + scr_wid/2, _pos.y - scr_hei/2 +_size.y);
+    glm::vec2 scr_pos(_pos.x + scr_wid/2, _pos.y +_size.y);
+    mouse.x = mouse.x - scr_wid / 2;
+    //mouse.y = mouse.y - scr_hei / 2;
 
-    glm::vec2 pos_scr(_pos.x + scr_wid/2, -1 * _pos.y + scr_wid/2 -_size.y);
-    if(mouse.x > pos_scr.x && mouse.x < pos_scr.x+_size.x &&
-            mouse.y > pos_scr.y && mouse.y < pos_scr.y+_size.y){
+    //std::cout << "contains: (" << mouse.x << ", " << mouse.y << ") -> ("
+    //    <<scr_pos.x<<","<<scr_pos.y<<","<<scr_pos.x+_size.x<<","<<scr_pos.y+_size.y<<")"<< std::endl;
+    std::cout << "contains: (" << mouse.x << ", " << mouse.y << ") -> ("
+        <<_pos.x<<","<<_pos.y<<","<<_pos.x+_size.x<<","<<_pos.y+_size.y<<")"<< std::endl;
+
+    //if(mouse.x > scr_pos.x && mouse.x < scr_pos.x+_size.x &&
+    //        mouse.y > scr_pos.y && mouse.y < scr_pos.y+_size.y){
+    if(mouse.x > _pos.x && mouse.x < _pos.x+_size.x &&
+            mouse.y > _pos.y && mouse.y < _pos.y+_size.y){
         return true;
     }
     return false;
-
 }
 
 

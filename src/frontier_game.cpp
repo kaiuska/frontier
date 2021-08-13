@@ -31,7 +31,14 @@ FrontierGame::FrontierGame() :
 
     _map.create(0, 0, TILESX, TILESY);
 
-    //_main_menu.init(glm::vec2(scr_wid/2-menu_wid, scr_hei/4), glm::vec2(menu_wid, scr_hei*3/4));
+    _main_menu.init(glm::vec2(scr_wid/2-menu_wid, scr_hei/4), glm::vec2(menu_wid, scr_hei*3/4));
+
+    _projection = glm::ortho(
+                -(float)scr_wid/2, 
+                (float)scr_wid/2, 
+                -(float)scr_hei/2, 
+                (float)scr_hei/2, 
+                -20.0f, 10.0f); 
 }
 
 
@@ -52,40 +59,46 @@ void FrontierGame::play()
 
 
         if(resized){
-            //_main_menu.resize(glm::vec2(scr_wid/2-menu_wid, scr_hei/4), glm::vec2(menu_wid, scr_hei*3/4)); 
+            _main_menu.resize(glm::vec2(scr_wid/2-menu_wid, scr_hei/4), glm::vec2(menu_wid, scr_hei*3/4)); 
             resized = false;
         }
         if(mouse_clicked){
-            //if(_main_menu.is_clicked(click_pos)){
-            //    _main_menu.click(click_pos);
-            //}
-            //mouse_clicked = false;
+            if(_main_menu.contains(click_pos)){
+                _main_menu.click(click_pos);
+
+            }
+            mouse_clicked = false;
         }
         if(_state == AWAITING_ACTION){
 
-            //_main_menu.show_action_prompt();
-            //draw();
-
-            //ActionType action = _main_menu.get_action(_window);
+            double x, y;
 
 
-            //if(action == BUILD){
 
-            //    _main_menu.show_construction_prompt();
-            //    int new_feature = NO_FEATURE; 
 
-            //    draw();
-            //    new_feature = _main_menu.get_construction(_window);
-            //    printf("get construction %d  %s\n",new_feature, feature_defs[(FeatureType)new_feature].name.c_str());
-            //        
-            //    build_feature((FeatureType)new_feature);
-            //}
-            //if(action == TILL){
-            //    _map.change_tile(_map.adjacent_tile(), TILLED_SOIL);
-            //}
+            _main_menu.show_action_prompt();
+            draw();
 
-            ////perform_action(action);
-            //_state = NORMAL;
+            ActionType action = _main_menu.get_action(_window);
+
+
+            if(action == BUILD){
+
+                _main_menu.show_construction_prompt();
+                int new_feature = NO_FEATURE; 
+
+                draw();
+                new_feature = _main_menu.get_construction(_window);
+                printf("get construction %d  %s\n",new_feature, feature_defs[(FeatureType)new_feature].name.c_str());
+                    
+                build_feature((FeatureType)new_feature);
+            }
+            if(action == TILL){
+                _map.change_tile(_map.adjacent_tile(), TILLED_SOIL);
+            }
+
+            perform_action(action);
+            _state = NORMAL;
         }if(_state == NORMAL){
             process_input(_window, _map, delta_time);
         }
@@ -146,7 +159,6 @@ bool FrontierGame::process_input(GLFWwindow *window, Map& map ,float dt)
         _last_key_time = glfwGetTime();
 
     }else if(_state == AWAITING_ACTION){
-        /*
         if(glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS){
             printf("Action: Chop\n");
             perform_action(CHOP);
@@ -155,7 +167,7 @@ bool FrontierGame::process_input(GLFWwindow *window, Map& map ,float dt)
             key_pressed = true;
         }if(glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS){
             printf("Action: Build\n");
-            perform_action(CHOP);
+            perform_action(BUILD);
             _main_menu.hide_action_prompt();
             _state = NORMAL;
             key_pressed = true;
@@ -174,7 +186,6 @@ bool FrontierGame::process_input(GLFWwindow *window, Map& map ,float dt)
             _state = NORMAL;
             key_pressed = true;
         }
-        */
     }
 
     return key_pressed;
@@ -191,8 +202,8 @@ bool FrontierGame::perform_action(ActionType action)
         _map.change_feature(action_tile, CORN_STAGE_5);
     }
 
-    //_map.change_feature(action_tile, CORN_STAGE_5);
-    //printf("perform action\n");
+    _map.change_feature(action_tile, CORN_STAGE_5);
+    printf("perform action\n");
     
 }
 
@@ -308,15 +319,22 @@ void FrontierGame::draw()
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glm::mat4 projection = glm::ortho(
+                    -(float)scr_wid/2, 
+                    (float)scr_wid/2, 
+                    -(float)scr_hei/2, 
+                    (float)scr_hei/2, 
+                    -20.0f, 10.0f); 
+
         _map.draw(_main_shader);
 
         _text_shader.use();
         _text_shader.setMat4("projection", glm::ortho(-scr_wid/2, scr_wid/2, -scr_hei/2, scr_hei/2, -20.0f, 10.0f));
-        //_main_menu.draw(_main_shader, _text_shader);
+        _main_menu.draw(_main_shader, _text_shader);
 
-        //text_shader.setMat4("projection", projection);
-        //text_shader.setMat4("view", glm::mat4(1.0f));
-        //render_text(text_shader, "frontier", -scr_wid/2+10, scr_hei/2-text_hei,0.5f, text_color);
+        _text_shader.setMat4("projection", projection);
+        _text_shader.setMat4("view", glm::mat4(1.0f));
+        render_text(_text_shader, "frontier", -scr_wid/2+10, scr_hei/2-text_hei,0.5f, text_color);
 
         glfwSwapBuffers(_window);
 
