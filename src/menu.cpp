@@ -57,7 +57,6 @@ void MainMenu::draw(Shader& shader, Shader& text_shader)
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); 
 
     for(int i = 0; i < _buttons.size(); i++){
-        //_buttons[i].set_highlight(glm::vec4(2.0f, 0.0f, 0.0f, 0.0f));
         _buttons[i].set_highlight(glm::vec4(2.0f, 0.0f, 0.0f, 0.0f));
         _buttons[i].draw(shader, text_shader);
     }

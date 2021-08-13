@@ -27,18 +27,18 @@ void Button::init(std::string text, float text_scale, glm::vec2 pos, glm::vec2 s
     _subtex = 0;
 
     set_position(pos);
-    //_projection = glm::ortho(
-    //            -(float)scr_wid/2, 
-    //            (float)scr_wid/2, 
-    //            -(float)scr_hei/2, 
-    //            (float)scr_hei/2, 
-    //            -20.0f, 10.0f); 
     _projection = glm::ortho(
-                0.0f,
-                scr_wid,
-                0.0f,
-                scr_hei,
+                -(float)scr_wid/2, 
+                (float)scr_wid/2, 
+                -(float)scr_hei/2, 
+                (float)scr_hei/2, 
                 -20.0f, 10.0f); 
+    //_projection = glm::ortho(
+    //            0.0f,
+    //            scr_wid,
+    //            0.0f,
+    //            scr_hei,
+    //            -20.0f, 10.0f); 
 }
 
 
@@ -74,7 +74,7 @@ void Button::draw(Shader& shader, Shader& text_shader)
 
     shader.setMat4("model", model);
     shader.setMat4("view", glm::mat4(1.0f));
-    //shader.setMat4("projection", _projection);
+    shader.setMat4("projection", _projection);
     //set_highlight(_highlight);
     if(_selected)
         shader.setVec4("highlight", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));

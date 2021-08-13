@@ -74,8 +74,6 @@ void FrontierGame::play()
             double x, y;
 
 
-
-
             _main_menu.show_action_prompt();
             draw();
 
