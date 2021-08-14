@@ -31,11 +31,12 @@ public:
     
 
     bool running();
-    bool perform_action(ActionType action, FeatureType feature = NO_FEATURE);
+    bool build_action();
+    bool chop_action();
     void clock_tick();
 private:
     GLFWwindow *create_window();
-    bool process_input(GLFWwindow *window, Map& map ,float dt);
+    ActionType process_input(GLFWwindow *window, Map& map ,float dt);
 
     static void framebuffer_size_callback(GLFWwindow* window, int wid, int hei);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);

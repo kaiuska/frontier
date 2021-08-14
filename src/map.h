@@ -39,7 +39,6 @@ public:
     void change_feature(glm::ivec2 tile, FeatureType new_feature);
 
     void change_tile(glm::ivec2 tile, TileType new_tile);
-    FeatureType get_type();
 
 
 

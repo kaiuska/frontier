@@ -86,11 +86,11 @@ void Map::draw(Shader& shader)
 
             // calculate fade for tiles of differing elevation
             int diff_elevation = -abs(_tiles[x][y]->get_elevation()-_player_elevation); 
-            float fade = (float)diff_elevation / (float)(MAX_ELEVATION-WATER_LEVEL);
+            float fade = (float)diff_elevation * 0.01f;
             _tiles[x][y]->set_highlight(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f) * fade * 1.0f);
 
             _tiles[x][y]->draw(shader);
-            if(x == _dimensions.x/2 && y == _dimensions.y/2){
+            if (x == _dimensions.x/2 && y == _dimensions.y/2){
                 _player.draw(shader);
             }
         }
@@ -127,54 +127,48 @@ void Map::generate_tile(int x, int y, int worldx, int worldy)
     glm::vec2 v((float)(worldx+320)*0.05f, (float)(worldy-119)*0.05f);
 
 
-    //float w1 = 5.8;
-    //float w2 = 3.7;
-    //float w3 = 1.5;
-    //float w4 = 0.85;
-    //float w5 = 0.42;
-    //float w6 = 0.38;
-    //float w7 = 0.12;
-    float w1 = 4.8;
-    float w2 = 2.7;
-    float w3 = 3.5;
-    float w4 = 0.85;
-    float w5 = 1.42;
-    float w6 = 0.78;
-    float w7 = 0.32;
+    static std::vector<glm::vec2> elevation_intervals = {
+        {1.0f / 10.0f, 4.8f},
+        {1.0f / 5.0f, 2.7f},
+        {1.0f / 3.0f, 3.5f},
+        {1.0f / 2.0f, 0.8f},
+        {1.0f / 1.5f, 1.4f},
+        {1.0f / 1.1f, 0.7f},
+        {1.0f / 0.8f, 0.3f}
+    };
 
-    float r = 
-        noise(v * (1.0f/10.0f)) * w1 + 
-        noise(v * (1.0f/5.0f))  * w2 + 
-        noise(v * (1.0f/3.0f))  * w3 + 
-        noise(v * (1.0f/2.0f))  * w4 + 
-        noise(v * (1.0f/1.5f))  * w5 +
-        noise(v * (1.0f/1.1f))  * w6 +
-        noise(v * (2.0f))       * w7;
+    
+    float r = 0.0f;
+    float wtot = 0.0f;
+    for (auto i : elevation_intervals) {
+        r += noise(v * i.x) * i.y;
+        wtot += i.y;
+    }
+    wtot /= elevation_intervals.size();
 
-    float wtot = w1 + w2 + w3 + w4 + w5 + w6+ w7;
     r = (1.0 + r) / 2.0;
     r = (r / wtot) * MAX_ELEVATION;
-    
 
     int elevation = round(r); 
 
-    if(elevation > MAX_ELEVATION)
+    if (elevation > MAX_ELEVATION) {
         elevation = MAX_ELEVATION;
-    if(elevation < MIN_ELEVATION)
+    } if (elevation < MIN_ELEVATION) {
         elevation = MIN_ELEVATION;
+    }
 
 
     TileType tile = GREEN_GRASS;
     FeatureType feature = NO_FEATURE;
 
-    if(elevation <= WATER_LEVEL){
+    if (elevation <= WATER_LEVEL){
         tile = WATER;
         elevation = WATER_LEVEL;
     }else{
-        if(noise(v * (1.0f/20.0f)) * 20.0f > 0.5)
+        if (noise(v * (1.0f/20.0f)) * 20.0f > 0.5)
             tile = DEAD_GRASS;
 
-        if(_changes.find(std::pair<int, int>(worldx, worldy)) != _changes.end()){
+        if (_changes.find(std::pair<int, int>(worldx, worldy)) != _changes.end()){
             //feature = it; 
 
             feature = _changes[std::pair<int, int>(worldx,worldy)].feature;
@@ -203,17 +197,17 @@ void Map::generate_tile(int x, int y, int worldx, int worldy)
                 noise(v * (1.0f/0.4f)) * 0.192f+ 
                 noise(v * (1.0f/0.04f)) * 0.34f;
 
-            if(prairie_roll < 0.40f && prairie_roll > 0.23f){
+            if (prairie_roll < 0.40f && prairie_roll > 0.23f){
                 feature = NO_FEATURE;
             }else{
                     
-                if(feature_roll < 0.2f && feature_roll > 0.1f){
+                if (feature_roll < 0.2f && feature_roll > 0.1f){
                     feature = TREE;
-                }else if(feature_roll < 0.25f && feature_roll > 0.2f){
+                }else if (feature_roll < 0.25f && feature_roll > 0.2f){
                     feature = OLD_TREE;
-                }else if(feature_roll < 0.28f && feature_roll > 0.25f){
+                }else if (feature_roll < 0.28f && feature_roll > 0.25f){
                     feature = FERN;
-                }else if(feature_roll < 0.35f && feature_roll > 0.3f){
+                }else if (feature_roll < 0.35f && feature_roll > 0.3f){
                     feature = LONG_GRASS;
                 }
             }
@@ -234,11 +228,11 @@ void Map::generate_tile(int x, int y, int worldx, int worldy)
 
 void Map::zoom(float inc)
 {
-    if(inc < 0.0f && _zoom + inc > MIN_ZOOM){
+    if (inc < 0.0f && _zoom + inc > MIN_ZOOM){
         _zoom += inc;
-        if(_tiles_to_render > 10)
+        if (_tiles_to_render > 10)
             _tiles_to_render -= 10;
-    }else if(inc > 0.0f && _zoom + inc < MAX_ZOOM){
+    }else if (inc > 0.0f && _zoom + inc < MAX_ZOOM){
         _zoom += inc;
         _tiles_to_render += 10;
     }
@@ -255,28 +249,28 @@ glm::ivec2 Map::adjacent_tile()
 {
     Direction dir = _player.facing();
     glm::ivec2 start = _player.get_tile();
-    if(dir == NORTH){
+    if (dir == NORTH){
         return glm::ivec2(start.x-1, start.y-1); 
 
-    }else if(dir == NORTHEAST){
+    }else if (dir == NORTHEAST){
         return glm::ivec2(start.x, start.y-1); 
 
-    }else if(dir == EAST){
+    }else if (dir == EAST){
         return glm::ivec2(start.x+1, start.y-1); 
 
-    }else if(dir == SOUTHEAST){
+    }else if (dir == SOUTHEAST){
         return glm::ivec2(start.x+1, start.y); 
 
-    }else if(dir == SOUTH){
+    }else if (dir == SOUTH){
         return glm::ivec2(start.x+1, start.y+1); 
 
-    }else if(dir == SOUTHWEST){
+    }else if (dir == SOUTHWEST){
         return glm::ivec2(start.x, start.y+1); 
 
-    }else if(dir == WEST){
+    }else if (dir == WEST){
         return glm::ivec2(start.x-1, start.y+1); 
 
-    }else if(dir == NORTHWEST){
+    }else if (dir == NORTHWEST){
         return glm::ivec2(start.x-1, start.y); 
     }else{
         return start;
@@ -286,6 +280,7 @@ glm::ivec2 Map::adjacent_tile()
 
 bool save_changes()
 {
+    return false;
 }
 
 FeatureType Map::get_feature(glm::ivec2 tile)
@@ -298,13 +293,13 @@ void Map::move_player(MoveDirection direction)
     int offset = 1;
     Direction dir = _player.facing();
 
-    if(direction == BACKWARD){
+    if (direction == BACKWARD){
         dir = reverse_direction(dir);
     }
     
 
     // Scroll map northwest 
-    if(dir == NORTHWEST || dir == NORTH || dir == WEST){
+    if (dir == NORTHWEST || dir == NORTH || dir == WEST){
         _world_pos.x -= offset;
 
         for(int y = 0; y < _dimensions.y; y++){
@@ -325,7 +320,7 @@ void Map::move_player(MoveDirection direction)
     }
 
     // Scroll map northeast
-    if(dir == NORTHEAST || dir == NORTH || dir == EAST){
+    if (dir == NORTHEAST || dir == NORTH || dir == EAST){
         _world_pos.y -= offset;
 
         for(int x = 0; x < _dimensions.x; x++){
@@ -345,7 +340,7 @@ void Map::move_player(MoveDirection direction)
     }
 
     // Scroll map southwest
-    if(dir == SOUTHWEST || dir == SOUTH || dir == WEST){
+    if (dir == SOUTHWEST || dir == SOUTH || dir == WEST){
         _world_pos.y += offset;
 
         for(int x = 0; x < _dimensions.x; x++){
@@ -365,10 +360,10 @@ void Map::move_player(MoveDirection direction)
     }
     
     // Scroll map southeast 
-    if(dir == SOUTHEAST || dir == SOUTH || dir == EAST){
+    if (dir == SOUTHEAST || dir == SOUTH || dir == EAST){
         _world_pos.x += offset;
 
-        for(int y = 0; y < _dimensions.y; y++){
+        for (int y = 0; y < _dimensions.y; y++) {
             delete _tiles[0][y];
 
             for(int x = 1; x < _dimensions.x; x++){
@@ -413,8 +408,4 @@ void Map::change_tile(glm::ivec2 tile, TileType new_tile)
 }
 
 
-FeatureType Map::get_type()
-{
-
-}
 

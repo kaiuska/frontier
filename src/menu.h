@@ -31,7 +31,7 @@ public:
     void hide_action_prompt();
 
     ActionType get_action(GLFWwindow *window);
-    int get_construction(GLFWwindow *window);
+    FeatureType get_construction(GLFWwindow *window);
     
     void add_button(std::string text, glm::vec2 size, ActionType action);
     void add_button(FeatureType feature);

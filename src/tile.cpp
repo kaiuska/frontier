@@ -6,7 +6,7 @@ Tile::Tile(){}
 Tile::Tile(glm::vec2 pos, glm::vec2 size, TileType type, FeatureType feature_type)
     : Sprite(pos, size, textures[type])
 {
-    if(_type == NO_TILE){
+    if (_type == NO_TILE){
         return;
     }
     _type = type;

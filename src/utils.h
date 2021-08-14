@@ -22,14 +22,14 @@
 #include "shader.h"
 #include "types.h"
 
-//default sizes
-#define DEFAULT_HEI 800
-#define DEFAULT_WID 600
+// default sizes
+extern const int CHUNK_SIZE;
 
-#define TILESX 50
-#define TILESY 50
+extern const int TILESX;
+extern const int TILESY;
 
-#define CHUNK_SIZE 50
+extern const int DEFAULT_WID;
+extern const int DEFAULT_HEI;
 
 // turn length of 5 seconds
 extern const float TURN_LENGTH;
@@ -110,8 +110,6 @@ glm::vec3 iso_to_cartesian(glm::vec3 iso);
 glm::vec2 place_tile(glm::vec2 cart, float wid, float hei);
 void render_text(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color);
 void init_textures();
-//bool contains(glm::vec2, glm::vec4);
-//bool contains(glm::vec2 point, glm::vec2 pos, glm::vec2 size);
 
 Direction reverse_direction(Direction dir);
 

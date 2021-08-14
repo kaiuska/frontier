@@ -10,6 +10,16 @@ glm::vec2 click_pos = glm::vec2(0, 0);
 glm::vec2 mouse_pos = glm::vec2(0, 0);
 
 
+const int CHUNK_SIZE = 70;
+
+const int TILESX = 70;
+const int TILESY = 70;
+
+const int DEFAULT_WID = 800;
+const int DEFAULT_HEI = 600;
+
+
+
 const float TURN_LENGTH = 0.05;
 
 float scr_wid = (float)DEFAULT_WID;
@@ -20,9 +30,6 @@ std::map<unsigned int, unsigned int> vertex_arrays;
 
 std::map <char, Character> characters;
 
-//float TILE_WID = 64.0f;
-//float TILE_HEI = 258.0f;
-//
 short *rands = NULL;
 
 float TILE_WID = 64.0f;
@@ -31,6 +38,7 @@ float TILE_HEI = 256.0f;
 const float TILE_SURFACE_HEI = TILE_WID/2;
 
 const float ZOOM_INC = 0.5f;
+
 const float MAX_ZOOM = 16.0f;
 const float MIN_ZOOM = 0.5f;
 
@@ -42,7 +50,7 @@ const float feature_hei = 240.0f;
 
 const float ELEVATION_OFFSET = 0.1f;
 //const int MAX_ELEVATION = 64;
-const int MAX_ELEVATION = 128;
+const int MAX_ELEVATION = 24;
 //const int MAX_ELEVATION = 34;
 const int MIN_ELEVATION = 0;
 const int WATER_LEVEL = 1;
@@ -199,14 +207,6 @@ unsigned int indices[] = {
     3, 2, 1,
 };
 
-//bool contains(glm::vec2 point, glm::vec2 pos, glm::vec2 size)
-//{
-//    if (pos.x < point.x && point.x < pos.x + size.x && pos.y < point.y && point.y < pos.y + size.y) {
-//        return true;
-//    }
-//    return false;
-//}
-
 short *init_rands(int seed_size)
 {
     rands = new short[seed_size];
@@ -215,6 +215,7 @@ short *init_rands(int seed_size)
     }
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::shuffle(rands, rands + seed_size, std::default_random_engine(seed));
+    return rands;
 }
 //float noise(glm::vec2 p){
 //    // points

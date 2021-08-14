@@ -157,7 +157,7 @@ ActionType MainMenu::get_action(GLFWwindow *window)
     return action;
 }
 
-int MainMenu::get_construction(GLFWwindow *window)
+FeatureType MainMenu::get_construction(GLFWwindow *window)
 {
     bool selected = false;
     FeatureType feature = NO_FEATURE;
@@ -173,6 +173,7 @@ int MainMenu::get_construction(GLFWwindow *window)
             mouse_clicked = false;
         }
 
+        /*
         if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
             _buttons[_highlight].set_selected(false);
             _highlight++;
@@ -191,7 +192,10 @@ int MainMenu::get_construction(GLFWwindow *window)
             feature = (FeatureType)_buttons[_highlight].get_action();
             selected = true;
 
-        }if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+
+        }
+        */
+        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
             feature = NO_FEATURE;
             selected = true;
         }
@@ -203,7 +207,7 @@ int MainMenu::get_construction(GLFWwindow *window)
 
 void MainMenu::show_action_prompt()
 {
-    printf("action prompt\n");
+    _buttons.clear();
     _buttons.push_back(Button("Build", 
                 0.5f, 
                 glm::vec2(_pos.x + 10, _pos.y - 10.0f),
