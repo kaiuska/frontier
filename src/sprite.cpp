@@ -34,6 +34,10 @@ void Sprite::create(glm::vec2 pos, glm::vec2 size, unsigned int texID, int subte
     set_position(pos);
     set_size(size);
 
+    //glm::mat4 model(1.0f);
+    _model = glm::mat4(1.0f);
+    _model = glm::scale(_model, glm::vec3(_size.x, _size.y, 1.0f));
+    _model = glm::translate(_model, glm::vec3(_pos.x/_size.x, _pos.y/_size.y, 0.0f));
 
     //_projection = glm::ortho(
     //            -(float)scr_wid/2, 
@@ -55,6 +59,9 @@ void Sprite::create(glm::vec2 pos, glm::vec2 size, unsigned int texID)
     set_position(pos);
     set_size(size);
 
+    _model = glm::mat4(1.0f);
+    _model = glm::scale(_model, glm::vec3(_size.x, _size.y, 1.0f));
+    _model = glm::translate(_model, glm::vec3(_pos.x/_size.x, _pos.y/_size.y, 0.0f));
 }
 
 void Sprite::draw(Shader shader)
@@ -69,10 +76,7 @@ void Sprite::draw(Shader shader)
 
     shader.setVec4("highlight", _highlight);
 
-    glm::mat4 model(1.0f);
-    model = glm::scale(model, glm::vec3(_size.x, _size.y, 1.0f));
-    model = glm::translate(model, glm::vec3(_pos.x/_size.x, _pos.y/_size.y, 0.0f));
-    shader.setMat4("model", model);
+    shader.setMat4("model", _model);
 
     float t_wid = (float)TILE_WID/_tex_dimensions.x;
     shader.setInt("subtex", _subtex);
@@ -118,17 +122,18 @@ glm::vec2 Sprite::get_size()
     return _size;
 }
 
+void Sprite::set_position(glm::vec2 pos)
+{
+    set_position(pos.x, pos.y);
+}
 
 void Sprite::set_position(float x, float y)
 {
     _pos = glm::vec2(x, y); 
+    update_model_matrix();
 }
 
 
-void Sprite::set_position(glm::vec2 pos)
-{
-    _pos = pos; 
-}
 
 
 void Sprite::set_size(float x, float y)
@@ -139,12 +144,20 @@ void Sprite::set_size(float x, float y)
 
     _size = glm::vec2(w, h); 
     //_pos.y +=  _tex_dimensions.y - tile_surface_hei;
+    update_model_matrix();
+}
+
+
+void Sprite::update_model_matrix()
+{
+    _model = glm::mat4(1.0f);
+    _model = glm::scale(_model, glm::vec3(_size.x, _size.y, 1.0f));
+    _model = glm::translate(_model, glm::vec3(_pos.x/_size.x, _pos.y/_size.y, 0.0f));
 }
 
 
 void Sprite::set_size(glm::vec2 size)
 {
-
     _tex_dimensions = get_tex_dimensions();
     float w = (size.x == SCALE_TO_TEX) ? _tex_dimensions.x : size.x;
     float h = (size.y == SCALE_TO_TEX) ? _tex_dimensions.y : size.y;
@@ -169,18 +182,6 @@ glm::vec2 Sprite::get_tex_dimensions()
 
 bool Sprite::contains(glm::vec2 mouse)
 {
-    //glm::vec2 scr_pos(_pos.x + scr_wid/2, _pos.y - scr_hei/2 +_size.y);
-    glm::vec2 scr_pos(_pos.x + scr_wid/2, _pos.y +_size.y);
-    mouse.x = mouse.x - scr_wid / 2;
-    //mouse.y = mouse.y - scr_hei / 2;
-
-    //std::cout << "contains: (" << mouse.x << ", " << mouse.y << ") -> ("
-    //    <<scr_pos.x<<","<<scr_pos.y<<","<<scr_pos.x+_size.x<<","<<scr_pos.y+_size.y<<")"<< std::endl;
-    std::cout << "contains: (" << mouse.x << ", " << mouse.y << ") -> ("
-        <<_pos.x<<","<<_pos.y<<","<<_pos.x+_size.x<<","<<_pos.y+_size.y<<")"<< std::endl;
-
-    //if(mouse.x > scr_pos.x && mouse.x < scr_pos.x+_size.x &&
-    //        mouse.y > scr_pos.y && mouse.y < scr_pos.y+_size.y){
     if(mouse.x > _pos.x && mouse.x < _pos.x+_size.x &&
             mouse.y > _pos.y && mouse.y < _pos.y+_size.y){
         return true;

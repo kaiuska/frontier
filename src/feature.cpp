@@ -53,6 +53,7 @@ void Feature::set_elevation(int elevation)
 {
     _elevation = elevation;
     _pos.y += _elevation*VOXEL_HEI/3;
+    update_model_matrix();
 }
 
 

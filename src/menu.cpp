@@ -101,7 +101,7 @@ ActionType MainMenu::get_action(GLFWwindow *window)
             double x, y;
             glfwGetCursorPos(window, &x, &y);
             mouse_pos = glm::vec2(x, y);
-            std::cout << "mouse_pos: ("<<mouse_pos.x<<", "<<mouse_pos.y<<")"<<std::endl;
+            //std::cout << "mouse_pos: ("<<mouse_pos.x<<", "<<mouse_pos.y<<")"<<std::endl;
 
             if (_buttons[i].contains(mouse_pos)) {
                 _buttons[i].set_highlight(glm::vec4(1.0f));
@@ -161,7 +161,6 @@ int MainMenu::get_construction(GLFWwindow *window)
 {
     bool selected = false;
     FeatureType feature = NO_FEATURE;
-    show_action_prompt();
 
     while(!selected){
         glfwWaitEvents();
@@ -198,12 +197,8 @@ int MainMenu::get_construction(GLFWwindow *window)
         }
     }
 
-    //if(selected){
     clear_menu();
     return feature;
-    //}
-    //else return NO_FEATURE;
-
 }
 
 void MainMenu::show_action_prompt()
@@ -302,14 +297,33 @@ int MainMenu::click(glm::vec2 mouse)
     for(int i = 0; i < _buttons.size(); i++){
         if(_buttons[i].contains(mouse)){
             _buttons[i].click();
+            glm::vec2 button_pos = _buttons[i].get_position();
+            glm::vec2 button_size = _buttons[i].get_size();
             action = _buttons[i].get_action();
             printf("button %s clicked\n", _buttons[i].get_text().c_str());
+            std::cout << "contains: (" << mouse.x << ", " << mouse.y << ") -> ("
+                <<button_pos.x<<","<<button_pos.y<<","<<button_pos.x+button_size.x<<","<<button_pos.y-button_size.y<<")"<< std::endl;
 
         }
     }
     return action;
 }
 
+
+bool MainMenu::contains(glm::vec2 mouse)
+{
+    mouse.x = (mouse.x - scr_wid / 2);
+    mouse.y = (-mouse.y + scr_hei / 2);
+
+    //glm::vec4 m {(mouse.x/2)/scr_wid - 1.0f, (mouse.y/2)/scr_hei - 1.0f};
+    glm::vec4 m {mouse.x/scr_wid, mouse.y/scr_hei, 0.0f, 0.0f};
+    m = m * _projection;
+    //if (_pos.x < mouse.x && mouse.x < _pos.x + _size.x && _pos.y < mouse.y && mouse.y < _pos.y - _size.y) {
+    if (_pos.x < m.x && m.x < _pos.x + _size.x && _pos.y < m.y && m.y < _pos.y + _size.y) {
+        return true;
+    }
+    return false;
+}
 
 
 

@@ -31,8 +31,7 @@ public:
     
 
     bool running();
-    bool perform_action(ActionType action);
-    bool build_feature(FeatureType feature);
+    bool perform_action(ActionType action, FeatureType feature = NO_FEATURE);
     void clock_tick();
 private:
     GLFWwindow *create_window();

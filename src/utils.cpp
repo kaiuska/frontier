@@ -199,6 +199,13 @@ unsigned int indices[] = {
     3, 2, 1,
 };
 
+//bool contains(glm::vec2 point, glm::vec2 pos, glm::vec2 size)
+//{
+//    if (pos.x < point.x && point.x < pos.x + size.x && pos.y < point.y && point.y < pos.y + size.y) {
+//        return true;
+//    }
+//    return false;
+//}
 
 short *init_rands(int seed_size)
 {

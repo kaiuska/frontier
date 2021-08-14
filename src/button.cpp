@@ -41,6 +41,20 @@ void Button::init(std::string text, float text_scale, glm::vec2 pos, glm::vec2 s
     //            -20.0f, 10.0f); 
 }
 
+bool Button::contains(glm::vec2 mouse)
+{
+    mouse.x = (mouse.x - scr_wid / 2);
+    mouse.y = (-mouse.y + scr_hei / 2);
+
+    //std::cout << "contains: (" << mouse.x << ", " << mouse.y << ") -> ("
+    //    <<_pos.x<<","<<_pos.y<<","<<_pos.x+_size.x<<","<<_pos.y-_size.y<<")"<< std::endl;
+
+    if (_pos.x < mouse.x && mouse.x < _pos.x + _size.x && mouse.y < _pos.y && mouse.y < _pos.y + _size.y) {
+        return true;
+    }
+    return false;
+}
+
 
 void Button::set_image(unsigned int texID, int subtex)
 {

@@ -28,6 +28,7 @@ public:
     std::string get_text();
     void set_image(unsigned int texID, int subtex);
     int get_action();
+    bool contains(glm::vec2 mouse);
     
     
     void set_selected(bool selected);

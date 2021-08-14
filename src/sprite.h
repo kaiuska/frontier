@@ -39,12 +39,14 @@ public:
     void set_textureID(unsigned int texID);
     void set_vaoID(unsigned int vaoID);
 
-    bool contains(glm::vec2 mouse);
+    virtual bool contains(glm::vec2 mouse);
 
     //virtual void click();
     //void set_elevation(int elevation);
     void set_subtex(int subtex);
     void set_highlight(glm::vec4 highlight);
+    
+    void update_model_matrix();
 
 protected:
     glm::vec2 _pos;
@@ -57,7 +59,9 @@ protected:
     int _subtex;
     //glm::vec4 _texture_rect;
     glm::mat4 _projection;
+    glm::mat4 _model;
 };
+
 
 
 #endif

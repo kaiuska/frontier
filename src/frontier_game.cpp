@@ -31,7 +31,8 @@ FrontierGame::FrontierGame() :
 
     _map.create(0, 0, TILESX, TILESY);
 
-    _main_menu.init(glm::vec2(scr_wid/2-menu_wid, scr_hei/4), glm::vec2(menu_wid, scr_hei*3/4));
+    //_main_menu.init(glm::vec2(scr_wid/2-menu_wid, scr_hei/4), glm::vec2(menu_wid, scr_hei*3/4));
+    _main_menu.init(glm::vec2(scr_wid/2-menu_wid, scr_hei/4), glm::vec2(menu_wid, (scr_hei*3)/4));
 
     _projection = glm::ortho(
                 -(float)scr_wid/2, 
@@ -44,7 +45,8 @@ FrontierGame::FrontierGame() :
 
 void FrontierGame::play()
 {
-        draw();
+    draw();
+    int new_feature = NO_FEATURE; 
     while(!glfwWindowShouldClose(_window) && _state != CRASH)
     {
         draw();
@@ -53,8 +55,6 @@ void FrontierGame::play()
             current_time = glfwGetTime();
         }
 
-        //delta_time = current_time - last_time;
-
         last_time = current_time;  
 
 
@@ -62,13 +62,14 @@ void FrontierGame::play()
             _main_menu.resize(glm::vec2(scr_wid/2-menu_wid, scr_hei/4), glm::vec2(menu_wid, scr_hei*3/4)); 
             resized = false;
         }
+
         if(mouse_clicked){
             if(_main_menu.contains(click_pos)){
                 _main_menu.click(click_pos);
-
             }
             mouse_clicked = false;
         }
+
         if(_state == AWAITING_ACTION){
 
             double x, y;
@@ -76,33 +77,24 @@ void FrontierGame::play()
 
             _main_menu.show_action_prompt();
             draw();
-
             ActionType action = _main_menu.get_action(_window);
-
-
             if(action == BUILD){
-
                 _main_menu.show_construction_prompt();
-                int new_feature = NO_FEATURE; 
-
                 draw();
                 new_feature = _main_menu.get_construction(_window);
-                printf("get construction %d  %s\n",new_feature, feature_defs[(FeatureType)new_feature].name.c_str());
-                    
-                build_feature((FeatureType)new_feature);
+                printf("get construction %d  %s\n", new_feature, feature_defs[(FeatureType)new_feature].name.c_str());
             }
             if(action == TILL){
                 _map.change_tile(_map.adjacent_tile(), TILLED_SOIL);
             }
 
-            perform_action(action);
+            perform_action(action, (FeatureType)new_feature);
             _state = NORMAL;
         }if(_state == NORMAL){
             process_input(_window, _map, delta_time);
         }
 
         draw();
-
 
         current_time = glfwGetTime();
 
@@ -126,7 +118,7 @@ bool FrontierGame::process_input(GLFWwindow *window, Map& map ,float dt)
     if(_state == NORMAL && (new_time - _last_key_time) > TURN_LENGTH){
 
         if(glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS){
-            _state = AWAITING_ACTION; 
+            //_state = AWAITING_ACTION; 
             key_pressed = true;
 
         }if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
@@ -156,7 +148,7 @@ bool FrontierGame::process_input(GLFWwindow *window, Map& map ,float dt)
         }
         _last_key_time = glfwGetTime();
 
-    }else if(_state == AWAITING_ACTION){
+    //}else if(_state == AWAITING_ACTION){
         if(glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS){
             printf("Action: Chop\n");
             perform_action(CHOP);
@@ -189,20 +181,19 @@ bool FrontierGame::process_input(GLFWwindow *window, Map& map ,float dt)
     return key_pressed;
 }
 
-bool FrontierGame::perform_action(ActionType action)
+bool FrontierGame::perform_action(ActionType action, FeatureType feature )
 {
-    glm::ivec2 action_tile = _map.adjacent_tile();
     if(action == CHOP){
-        _map.change_feature(action_tile, NO_FEATURE);
-    } else if(action == BUILD){
-        _map.change_feature(action_tile, CABIN_WALL);
+        _map.change_feature(_map.adjacent_tile(), NO_FEATURE);
+        return true;
+    } else if(action == BUILD && feature != NO_FEATURE && feature_defs[feature].buildable){
+        _map.change_feature(_map.adjacent_tile(), feature);
+        return true;
     } else if(action == PLANT){
-        _map.change_feature(action_tile, CORN_STAGE_5);
+        _map.change_feature(_map.adjacent_tile(), CORN_STAGE_5);
+        return true;
     }
-
-    _map.change_feature(action_tile, CORN_STAGE_5);
-    printf("perform action\n");
-    
+    return false;
 }
 
 bool FrontierGame::running()
@@ -210,14 +201,13 @@ bool FrontierGame::running()
     return _state != CRASH ? true : false;
 }
 
+
 GLFWwindow *FrontierGame::create_window()
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-
 
     GLFWwindow* window = glfwCreateWindow(DEFAULT_HEI,DEFAULT_WID, "frontier", NULL,NULL);
     if(!window){
@@ -227,15 +217,12 @@ GLFWwindow *FrontierGame::create_window()
     }
     glfwMakeContextCurrent(window);
 
-
     if(!gladLoadGL()){
         std::cerr << "failed to initialize GLAD" << std::endl;
         return NULL;
     }
 
-    
     glViewport(0, 0, DEFAULT_HEI, DEFAULT_WID);
-
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetWindowSizeCallback(window, framebuffer_size_callback);
@@ -338,16 +325,5 @@ void FrontierGame::draw()
 
 }
 
-
-bool FrontierGame::build_feature(FeatureType feature)
-{
-    if(feature == NO_FEATURE)
-        return 0;
-    else{
-        glm::ivec2 action_tile = _map.adjacent_tile();
-        _map.change_feature(action_tile, feature);
-        return 1;
-    }
-}
 
 

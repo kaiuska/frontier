@@ -36,6 +36,8 @@ public:
     void add_button(std::string text, glm::vec2 size, ActionType action);
     void add_button(FeatureType feature);
     void clear_buttons();
+
+    bool contains(glm::vec2 mouse);
 private:
     float _border_wid;
     int _highlight;

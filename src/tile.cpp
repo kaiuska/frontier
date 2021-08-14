@@ -67,6 +67,7 @@ void Tile::set_elevation(int elevation)
     _elevation = elevation >= MIN_ELEVATION ? elevation : MIN_ELEVATION;
     _pos.y += _elevation*VOXEL_HEI/3;
     _feature.set_elevation(_elevation);
+    update_model_matrix();
 }
 
 int Tile::get_elevation()

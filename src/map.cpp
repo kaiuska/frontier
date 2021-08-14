@@ -124,7 +124,7 @@ void Map::init()
 
 void Map::generate_tile(int x, int y, int worldx, int worldy)
 {
-    glm::vec2 v((float)(worldx+320)*0.05f, (float)(worldy-119)*0.050f);
+    glm::vec2 v((float)(worldx+320)*0.05f, (float)(worldy-119)*0.05f);
 
 
     //float w1 = 5.8;
