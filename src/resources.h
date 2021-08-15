@@ -7,21 +7,33 @@
 #include <string>
 
 
-struct FeatureDef{
+class FeatureDef{
 public:
-    //FeatureDef(FeatureType type, unsigned int texID, unsigned int subtex, unsigned int _passable)
-
     FeatureType type;
     unsigned int texID;
     std::string name;
     unsigned int subtex;
-    //glm::vec2 _tex_dimensions;
     unsigned int passable;
     bool buildable;
 };
 
 
+class ItemDef{
+public:
+    ItemType type;
+    unsigned int texID;
+    std::string name;
+    unsigned int subtex;
+    unsigned int passable;
+    bool buildable;
+};
 extern std::map<FeatureType, FeatureDef> feature_defs;
+
+
+
+
+
+extern std::map<ItemType, ItemDef> item_defs;
 
 
 

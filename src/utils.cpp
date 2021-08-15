@@ -50,7 +50,7 @@ const float feature_hei = 240.0f;
 
 const float ELEVATION_OFFSET = 0.1f;
 //const int MAX_ELEVATION = 64;
-const int MAX_ELEVATION = 24;
+const int MAX_ELEVATION = 32;
 //const int MAX_ELEVATION = 34;
 const int MIN_ELEVATION = 0;
 const int WATER_LEVEL = 1;

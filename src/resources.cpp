@@ -11,7 +11,6 @@ FeatureType feature_list[] = {
     FERN,
     LONG_GRASS,
 
-
     // structures
     CABIN_WALL,
     
@@ -22,8 +21,6 @@ FeatureType feature_list[] = {
     CABIN_WALL_SOUTH_CORNER,
     CABIN_WALL_SOUTHWEST,
     CABIN_WALL_WEST_CORNER,
-    CABIN_WALL_NORTHWEST,
-
 
     // agriculture
     CORN_STAGE_1,
@@ -31,6 +28,8 @@ FeatureType feature_list[] = {
     CORN_STAGE_3,
     CORN_STAGE_4,
     CORN_STAGE_5,
+
+    
     NO_FEATURE
 };
 

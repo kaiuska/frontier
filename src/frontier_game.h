@@ -36,7 +36,7 @@ public:
     void clock_tick();
 private:
     GLFWwindow *create_window();
-    ActionType process_input(GLFWwindow *window, Map& map ,float dt);
+    ActionType process_input(GLFWwindow *window, Map& map);
 
     static void framebuffer_size_callback(GLFWwindow* window, int wid, int hei);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);

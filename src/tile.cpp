@@ -29,7 +29,6 @@ void Tile::draw(Shader shader)
 {
     Sprite::draw(shader);
 
-    _feature.set_highlight(_highlight);
     _feature.draw(shader);
 }
 
@@ -46,6 +45,10 @@ void Tile::set_type(TileType type)
     set_subtex(0);
 }
 
+void Tile::set_feature_highlight(glm::vec4 highlight)
+{
+    _feature.set_highlight(highlight);
+}
 
 
 FeatureType Tile::get_feature_type()

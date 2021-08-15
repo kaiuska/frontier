@@ -25,6 +25,7 @@ public:
     void set_feature(FeatureType feature);
     void set_type(TileType type);
     TileType get_type();
+    void set_feature_highlight(glm::vec4 highlight);
 
     Feature _feature;
 

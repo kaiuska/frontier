@@ -46,7 +46,6 @@ void FrontierGame::play()
 {
     _state = NORMAL;
     int new_feature = NO_FEATURE; 
-    _main_menu.show_action_prompt();
     while(!glfwWindowShouldClose(_window) && _state != CRASH)
     {
 
@@ -61,17 +60,19 @@ void FrontierGame::play()
             resized = false;
         }
 
+        _main_menu.show_action_prompt();
         draw();
 
         glfwWaitEvents();
-        process_input(_window, _map, delta_time);
+
+        process_input(_window, _map);
 
         current_time = glfwGetTime();
     }
 }
 
 
-ActionType FrontierGame::process_input(GLFWwindow *window, Map& map ,float dt)
+ActionType FrontierGame::process_input(GLFWwindow *window, Map& map)
 {
 
     bool recieved_input = false;
@@ -81,16 +82,15 @@ ActionType FrontierGame::process_input(GLFWwindow *window, Map& map ,float dt)
     ActionType action = ActionType::NONE;
     if (mouse_clicked) {
         action = (ActionType)_main_menu.click(click_pos);
+        mouse_clicked = false;
     }
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {    // quit
         glfwSetWindowShouldClose(window, true);
-        _state = NORMAL;
     } if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){    // wait
-        _state = NORMAL;
+        return NONE;
     } if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){         // quit
         _main_menu.hide_action_prompt();
-        _state = NORMAL;
     }
     
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){       // turn left

@@ -90,7 +90,8 @@ enum FeatureType{
 
 // items: 400-500
 enum ItemType{
-    NO_ITEM = 400
+    NO_ITEM = 400,
+
 };
 
 // controls: 500-599

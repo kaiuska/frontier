@@ -60,14 +60,6 @@ void Map::draw(Shader& shader)
     
     glm::mat4 view(1.0f); 
     view = glm::lookAt(_camera_pos, _camera_pos + _camera_front, _camera_up);
-    /*
-    glm::mat4 projection = glm::ortho(
-            _zoom * -(float)scr_wid / 2, 
-            _zoom *  (float)scr_wid / 2, 
-            _zoom * -(float)scr_hei / 2, 
-            _zoom *  (float)scr_hei / 2, 
-            -20.0f,  10.0f); 
-    */
 
     glm::mat4 model = glm::mat4(1.0f);
 
@@ -81,14 +73,48 @@ void Map::draw(Shader& shader)
     for(int x = beg_x; x < end_x; x++){
         for(int y = beg_y; y < end_y; y++){
 
+
+            // only draw tiles within visible radius of player
+            float dx = _dimensions.x/2 - x;
+            float dy = _dimensions.y/2 - y;
+            float r = sqrt((dx * dx + dy * dy));
+            if (r > _dimensions.x / 2) {
+                continue;
+            }
+
+
+
             shader.setMat4("view", view);
             shader.setMat4("projection", _projection_zoom);
 
-            // calculate fade for tiles of differing elevation
-            int diff_elevation = -abs(_tiles[x][y]->get_elevation()-_player_elevation); 
-            float fade = (float)diff_elevation * 0.01f;
-            _tiles[x][y]->set_highlight(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f) * fade * 1.0f);
+            // calculate fade for feature of differing elevation
+            int diff_elevation = _tiles[x][y]->get_elevation()-_player_elevation; 
+            if (diff_elevation < 0) {
+                float fade = (float)diff_elevation * 0.01f;
+                _tiles[x][y]->set_feature_highlight(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f) * fade);
+            }
 
+
+
+            // set shadows for tiles next to hills 
+            // TODO: use sun direction vector to change shadow with time of day and season
+            int sdist = 6;
+            float fade = 0.0f;
+            for (int tdist = 1; tdist < sdist; tdist++) {
+                if (x + tdist < end_x && y + tdist < end_y && _tiles[x][y]->get_elevation() == _tiles[x+tdist][y+tdist]->get_elevation() - 1) {
+                    fade -= 0.010f * (sdist - tdist);
+                }
+                if (y + tdist < end_y && _tiles[x][y]->get_elevation() == _tiles[x][y+tdist]->get_elevation() - 1) {
+                    fade -= 0.0075f * (sdist - tdist);
+                }
+                if (x + tdist < end_x && _tiles[x][y]->get_elevation() == _tiles[x+tdist][y]->get_elevation() - 1) {
+                    fade -= 0.0075f * (sdist - tdist);
+                }
+            }
+            _tiles[x][y]->set_highlight(glm::vec4(1.0f, 1.0f, 1.0f, 0.0f) * fade);
+
+
+            
             _tiles[x][y]->draw(shader);
             if (x == _dimensions.x/2 && y == _dimensions.y/2){
                 _player.draw(shader);
@@ -124,7 +150,7 @@ void Map::init()
 
 void Map::generate_tile(int x, int y, int worldx, int worldy)
 {
-    glm::vec2 v((float)(worldx+320)*0.05f, (float)(worldy-119)*0.05f);
+    glm::vec2 v((float)(worldx+320)*0.025f, (float)(worldy-119)*0.025f);
 
 
     static std::vector<glm::vec2> elevation_intervals = {
@@ -137,7 +163,7 @@ void Map::generate_tile(int x, int y, int worldx, int worldy)
         {1.0f / 0.8f, 0.3f}
     };
 
-    
+
     float r = 0.0f;
     float wtot = 0.0f;
     for (auto i : elevation_intervals) {
@@ -145,7 +171,6 @@ void Map::generate_tile(int x, int y, int worldx, int worldy)
         wtot += i.y;
     }
     wtot /= elevation_intervals.size();
-
     r = (1.0 + r) / 2.0;
     r = (r / wtot) * MAX_ELEVATION;
 
@@ -180,22 +205,31 @@ void Map::generate_tile(int x, int y, int worldx, int worldy)
 
             glm::vec2 v1((float)(500+worldx)*0.25f, (float)(worldy)*0.25f);
 
+            static std::vector<glm::vec2> feature_intervals = {
+                {1.0f / 0.01f, 0.23f},
+                {1.0f / 0.11f, 0.19f},
+                {1.0f / 0.13f, 1.19f},
+                {1.0f / 0.08f, 0.853f},
+                {1.0f / 0.03f, 3.2853f},
+                {1.0f / 0.05f, 1.938f},
+            };
+            
+            static std::vector<glm::vec2> prairie_intervals = {
+                {1.0f / 2.0f, 0.4f},
+                {1.0f / 1.0f, 1.29f},
+                {1.0f / 0.4f, 0.19f},
+                {1.0f / 0.04f, 0.34f},
+            };
 
-            float feature_roll = 
-                noise(v * (1.0f/0.01f)) * 0.23f + 
-                noise(v * (1.0f/0.1f)) * 0.19f + 
-                noise(v * (1.0f/0.13f)) * 1.1f + 
-                noise(v * (1.0f/0.08f)) * 0.853f + 
-                noise(v * (1.0f/0.03f)) * 3.2853f + 
-                noise(v * (1.0f/0.05f)) * 1.938f;
+            float feature_roll = 0.0f;
+            for (auto i : feature_intervals) {
+                feature_roll += noise(v * i.x) * i.y;
+            }
 
-
-
-            float prairie_roll = noise(v * (1.0f/4.0f)) + 
-                noise(v * (1.0f/2.0f)) * 0.4f + 
-                noise(v * (1.0f/1.0f)) * 1.29f+ 
-                noise(v * (1.0f/0.4f)) * 0.192f+ 
-                noise(v * (1.0f/0.04f)) * 0.34f;
+            float prairie_roll = 0.0f;
+            for (auto i : prairie_intervals) {
+                prairie_roll += noise(v * i.x) * i.y;
+            }
 
             if (prairie_roll < 0.40f && prairie_roll > 0.23f){
                 feature = NO_FEATURE;
